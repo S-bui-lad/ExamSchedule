@@ -2,11 +2,15 @@ package com.exam.Scheduler.service;
 
 import com.exam.Scheduler.entity.Exam;
 import com.exam.Scheduler.repository.ExamRepository;
+import jxl.Cell;
+import jxl.Sheet;
+import jxl.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,21 +21,27 @@ public class ExcelImportService {
 
     public List<Exam> importExamsFromExcel(MultipartFile file) {
         List<Exam> exams = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-        try (InputStream inputStream = file.getInputStream();
-             Workbook workbook = new XSSFWorkbook(inputStream)) {
+        try (InputStream inputStream = file.getInputStream()) {
+            Workbook workbook = Workbook.getWorkbook(inputStream);
+            Sheet sheet = workbook.getSheet(0); // Lấy sheet đầu tiên
 
-            Sheet sheet = workbook.getSheetAt(0);
-            for (Row row : sheet) {
-                if (row.getRowNum() == 0) continue; // Bỏ qua dòng tiêu đề
-
+            for (int i = 1; i < sheet.getRows(); i++) { // Bỏ qua dòng tiêu đề
                 Exam exam = new Exam();
-                exam.setSubject(row.getCell(0).getStringCellValue());
-                exam.setExamTime(row.getCell(1).getStringCellValue());
+                Cell subjectCell = sheet.getCell(0, i);
+                Cell timeCell = sheet.getCell(1, i);
+                Cell proctorCell = sheet.getCell(2, i); // Số giám thị cần thiết
+
+                exam.setSubject(subjectCell.getContents());
+                exam.setExamTime(LocalDateTime.parse(timeCell.getContents(), formatter));
+                exam.setRequiredProctors(Integer.parseInt(proctorCell.getContents())); // Lấy số giám thị từ Excel
 
                 exams.add(exam);
             }
+
             examRepository.saveAll(exams);
+            workbook.close();
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi đọc file Excel: " + e.getMessage());
         }

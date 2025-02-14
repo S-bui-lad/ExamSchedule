@@ -15,4 +15,6 @@ public class Exam {
     private Long id;
     private String subject;
     private LocalDateTime examTime;
+    public int requiredProctors;
 }
+
