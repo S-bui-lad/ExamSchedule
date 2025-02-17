@@ -4,39 +4,38 @@ import com.exam.Scheduler.entity.ExamRoom;
 import com.exam.Scheduler.entity.Subject;
 import com.exam.Scheduler.service.ExcelService;
 import jxl.read.biff.BiffException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.IIOException;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class ExcelController {
-    private ExcelService excelService;
-    public ExcelController(ExcelService excelService){
+    private final ExcelService excelService;
+
+    public ExcelController(ExcelService excelService) {
         this.excelService = excelService;
     }
 
-    @GetMapping("/read-exam-rooms")
-    public ArrayList<ExamRoom> getExamRoom(@RequestParam String filename) throws BiffException, IOException {
-        try{
-            return excelService.readExamRoom(filename);
-        }catch (IIOException e){
-          e.printStackTrace();
-          return new ArrayList<>();
+    @PostMapping("/exam-room")
+    public ResponseEntity<?> uploadExamRoom(@RequestParam("file") MultipartFile file) {
+        try {
+            List<ExamRoom> examRooms = excelService.readExamRoom(file);
+            return ResponseEntity.ok().body(examRooms);
+        } catch (IOException | BiffException e) {
+            return ResponseEntity.badRequest().body("Lỗi đọc file: " + e.getMessage());
         }
     }
 
-    @GetMapping("/read-subjects")
-    public ArrayList<Subject> getSubject(@RequestParam String filename) throws BiffException, IOException {
-        try{
-            return excelService.readSubject(filename);
-        }catch (IIOException e){
-            e.printStackTrace();
-            return new ArrayList<>();
+    @PostMapping("/subject")
+    public ResponseEntity<?> uploadSubject(@RequestParam("file") MultipartFile file) {
+        try {
+            List<Subject> subjects = excelService.readSubject(file);
+            return ResponseEntity.ok().body(subjects);
+        } catch (IOException | BiffException e) {
+            return ResponseEntity.badRequest().body("Lỗi đọc file: " + e.getMessage());
         }
     }
-
 }
