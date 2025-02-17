@@ -2,6 +2,8 @@ package com.exam.Scheduler.controller;
 
 import com.exam.Scheduler.entity.User;
 import com.exam.Scheduler.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,33 +14,35 @@ public class UserController {
     public UserController(UserService userService){
         this.userService = userService;
     }
-    @PostMapping("/user/create")
-    public User createNewUser(@RequestBody User user){
+    @PostMapping("/users/create")
+    public ResponseEntity<User> createUser(@RequestBody User user){
 
        User sonUser = this.userService.handleCreateUser(user);
-        return sonUser;
+        return ResponseEntity.status(HttpStatus.CREATED).body(sonUser);
     }
 
-    @DeleteMapping("/user/delete/{id}")
-    public String deleteUser(@PathVariable("id") long id){
+    @DeleteMapping("/users/delete/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") long id){
         this.userService.handleDeleteUser(id);
-        return "deleteUser";
+        return ResponseEntity.status(HttpStatus.OK).body("Delete User");
     }
 
-    @GetMapping("/user/{id}")
-    public User getUserById(@PathVariable("id") long id){
-        return this.userService.fetchUserById(id);
+    @GetMapping("/users/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable("id") long id){
+        User fetchUser = this.userService.fetchUserById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(fetchUser);
     }
 
-    @GetMapping("/user")
-    public List<User> getAllUser(){
-        return this.userService.fetchAllUser();
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUser(){
+
+        return ResponseEntity.status(HttpStatus.OK).body(this.userService.fetchAllUser());
     }
 
-    @PutMapping("/user")
-    public User updateUser(@RequestBody User user){
+    @PutMapping("/users")
+    public ResponseEntity<User> updateUser(@RequestBody User user){
         User sonUser = this.userService.handleUpdateUser(user);
-        return sonUser;
+        return ResponseEntity.status(HttpStatus.OK).body(sonUser);
     }
 
 }
