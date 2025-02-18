@@ -13,14 +13,14 @@ public class Subject {
     private Long id;
     private String maMon;
     private String tenMon;
-    private String soTinChi;
-    private String hocKy;
-    private String namHoc;
-    private String soLuongSinhVien;
-    private String gv1;
-    private String gv2;
-    private String thoiGianThi;
-    private String phongThi;
+    private String nhom;
+    private String to;
+    private String lop;
+    private String MSSV;
+    private String fristName;
+    private String lastName;
+    private String email;
+    private String hinhthuc;
 
     public Long getId() {
         return id;
@@ -46,67 +46,67 @@ public class Subject {
         this.tenMon = tenMon;
     }
 
-    public String getSoTinChi() {
-        return soTinChi;
+    public String getNhom() {
+        return nhom;
     }
 
-    public void setSoTinChi(String soTinChi) {
-        this.soTinChi = soTinChi;
+    public void setNhom(String nhom) {
+        this.nhom = nhom;
     }
 
-    public String getHocKy() {
-        return hocKy;
+    public String getTo() {
+        return to;
     }
 
-    public void setHocKy(String hocKy) {
-        this.hocKy = hocKy;
+    public void setTo(String to) {
+        this.to = to;
     }
 
-    public String getNamHoc() {
-        return namHoc;
+    public String getLop() {
+        return lop;
     }
 
-    public void setNamHoc(String namHoc) {
-        this.namHoc = namHoc;
+    public void setLop(String lop) {
+        this.lop = lop;
     }
 
-    public String getSoLuongSinhVien() {
-        return soLuongSinhVien;
+    public String getMSSV() {
+        return MSSV;
     }
 
-    public void setSoLuongSinhVien(String soLuongSinhVien) {
-        this.soLuongSinhVien = soLuongSinhVien;
+    public void setMSSV(String MSSV) {
+        this.MSSV = MSSV;
     }
 
-    public String getGv1() {
-        return gv1;
+    public String getFristName() {
+        return fristName;
     }
 
-    public void setGv1(String gv1) {
-        this.gv1 = gv1;
+    public void setFristName(String fristName) {
+        this.fristName = fristName;
     }
 
-    public String getGv2() {
-        return gv2;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setGv2(String gv2) {
-        this.gv2 = gv2;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public String getThoiGianThi() {
-        return thoiGianThi;
+    public String getEmail() {
+        return email;
     }
 
-    public void setThoiGianThi(String thoiGianThi) {
-        this.thoiGianThi = thoiGianThi;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getPhongThi() {
-        return phongThi;
+    public String getHinhthuc() {
+        return hinhthuc;
     }
 
-    public void setPhongThi(String phongThi) {
-        this.phongThi = phongThi;
+    public void setHinhthuc(String hinhthuc) {
+        this.hinhthuc = hinhthuc;
     }
 }

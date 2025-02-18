@@ -39,9 +39,11 @@ public class SubjectService {
         Subject currentSubject = this.fetchSubjectById(reqSubject.getId());
         if (currentSubject != null){
             currentSubject.setMaMon(reqSubject.getMaMon());
-            currentSubject.setSoLuongSinhVien(reqSubject.getSoLuongSinhVien());
-            currentSubject.setThoiGianThi(currentSubject.getThoiGianThi());
-            currentSubject.setPhongThi(currentSubject.getPhongThi());
+            currentSubject.setTo(reqSubject.getTo());
+            currentSubject.setNhom(reqSubject.getNhom());
+            currentSubject.setFristName(reqSubject.getFristName());
+            currentSubject.setLop(reqSubject.getLop());
+            currentSubject.setLastName(reqSubject.getLastName());
 
             currentSubject = this.subjectRepository.save(currentSubject);
         }

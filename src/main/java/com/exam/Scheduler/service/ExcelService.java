@@ -54,14 +54,14 @@ public class ExcelService {
             Subject newSubject = new Subject();
             newSubject.setMaMon(getCellValue(sheet, i, 0));
             newSubject.setTenMon(getCellValue(sheet, i, 1));
-            newSubject.setSoTinChi(getCellValue(sheet, i, 2));
-            newSubject.setHocKy(getCellValue(sheet, i, 3));
-            newSubject.setNamHoc(getCellValue(sheet, i, 4));
-            newSubject.setSoLuongSinhVien(getCellValue(sheet, i, 5));
-            newSubject.setGv1(getCellValue(sheet, i, 6));
-            newSubject.setGv2(getCellValue(sheet, i, 7));
-            newSubject.setThoiGianThi(getCellValue(sheet, i, 8));
-            newSubject.setPhongThi(getCellValue(sheet, i, 9));
+            newSubject.setNhom(getCellValue(sheet, i, 2));
+            newSubject.setTo(getCellValue(sheet, i, 3));
+            newSubject.setLop(getCellValue(sheet, i, 4));
+            newSubject.setMSSV(getCellValue(sheet, i, 5));
+            newSubject.setFristName(getCellValue(sheet, i, 6));
+            newSubject.setLastName(getCellValue(sheet, i, 7));
+            newSubject.setEmail(getCellValue(sheet, i, 8));
+            newSubject.setHinhthuc(getCellValue(sheet, i, 9));
 
             subjects.add(subjectService.handleCreateSubject(newSubject));
         }
