@@ -1,30 +1,25 @@
 package com.exam.Scheduler.controller;
 
-import com.exam.Scheduler.entity.Ngay;
+import com.exam.Scheduler.entity.ExamSchedule;
+import com.exam.Scheduler.entity.Subject;
 import com.exam.Scheduler.service.ExamScheduleService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/exam-schedule")
 public class ExamScheduleController {
-
-    private final ExamScheduleService examScheduleService;
+    private ExamScheduleService examScheduleService;
 
     public ExamScheduleController(ExamScheduleService examScheduleService) {
         this.examScheduleService = examScheduleService;
     }
 
-    // API lấy danh sách ngày thi
-    @GetMapping("/days")
-    public List<Ngay> getExamDays() {
-        return examScheduleService.getExamDays();
-    }
-
-    // API hoán vị lịch thi
-    @PostMapping("/swap")
-    public List<Ngay> swapExamDays() {
-        return examScheduleService.swapExamDays();
+    @PostMapping("/generate")
+    public List<ExamSchedule> generateExamSchedule() {
+        return examScheduleService.scheduleExams();
     }
 }

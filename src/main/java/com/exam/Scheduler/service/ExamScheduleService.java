@@ -1,44 +1,105 @@
 package com.exam.Scheduler.service;
 
-import com.exam.Scheduler.entity.Ngay;
+import com.exam.Scheduler.entity.*;
+import com.exam.Scheduler.repository.ExamRoomRepository;
+import com.exam.Scheduler.repository.StudentRepository;
+import com.exam.Scheduler.repository.SubjectRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ExamScheduleService {
-    private List<Ngay> ngayThi;
+    private final SubjectRepository subjectRepository;
+    private final StudentRepository studentRepository;
+    private final ExamRoomRepository examRoomRepository;
 
-    public ExamScheduleService() {
-        this.ngayThi = new ArrayList<>();
-        // Khởi tạo danh sách 14 ngày thi (ví dụ)
-        for (int i = 1; i <= 14; i++) {
-            ngayThi.add(new Ngay("Ngày " + i));
+    private final StudentService studentService;
+
+    private static final int EXAM_DAYS = 14;
+    private static final int EXAMS_PER_DAY = 4;
+
+    public ExamScheduleService(SubjectRepository subjectRepository, StudentRepository studentRepository, ExamRoomRepository examRoomRepository, StudentService studentService) {
+        this.subjectRepository = subjectRepository;
+        this.studentRepository = studentRepository;
+        this.examRoomRepository = examRoomRepository;
+        this.studentService = studentService;
+    }
+
+    public List<ExamSchedule> scheduleExams() {
+        List<Subject> subjects = subjectRepository.findAll();
+        List<ExamRoom> examRooms = examRoomRepository.findAll();
+        Map<String, Set<String>> conflicts = buildConflictGraph();
+        Map<String, Integer> subjectSchedule = new HashMap<>();
+        List<ExamSchedule> examSchedules = new ArrayList<>();
+
+        int day = 1, slot = 1;
+
+        for (Subject subject : subjects) {
+            Set<Integer> usedSlots = new HashSet<>();
+            for (String neighbor : conflicts.getOrDefault(subject.getSubjectCode(), new HashSet<>())) {
+                if (subjectSchedule.containsKey(neighbor)) {
+                    usedSlots.add(subjectSchedule.get(neighbor));
+                }
+            }
+
+            while (usedSlots.contains((day - 1) * EXAMS_PER_DAY + slot)) {
+                slot++;
+                if (slot > EXAMS_PER_DAY) {
+                    slot = 1;
+                    day++;
+                    if (day > EXAM_DAYS) {
+                        throw new RuntimeException("Không thể xếp lịch trong giới hạn 14 ngày");
+                    }
+                }
+            }
+
+            subjectSchedule.put(subject.getSubjectCode(), (day - 1) * EXAMS_PER_DAY + slot);
+            List<ExamRoom> assignedRooms = assignExamRooms(subject, examRooms);
+            examSchedules.add(new ExamSchedule(subject, day, slot, assignedRooms));
         }
+        return examSchedules;
     }
 
-    public List<Ngay> getExamDays() {
-        return new ArrayList<>(ngayThi); // Trả về bản sao danh sách
-    }
+    private Map<String, Set<String>> buildConflictGraph() {
+        Map<String, Set<String>> conflicts = new HashMap<>();
+        List<Student> students = studentRepository.findAll();
 
-    public List<Ngay> swapExamDays() {
-        if (ngayThi.size() == 14) {
-            List<Ngay> newList = new ArrayList<>(ngayThi);
-
-            swap(newList, 1, 10);
-            swap(newList, 3, 12);
-            swap(newList, 5, 8);
-            swap(newList, 7, 13);
-
-            this.ngayThi = newList; // Cập nhật danh sách mới
+        // Đảm bảo tất cả các môn học đều có entry trong conflicts
+        for (Subject subject : subjectRepository.findAll()) {
+            conflicts.put(subject.getSubjectCode(), new HashSet<>());
         }
-        return getExamDays();
+
+        for (Student student : students) {
+            List<Subject> subjects = studentRepository.findById(student.getId())
+                    .map(Student::getDanhSachMonHoc)
+                    .orElse(Collections.emptyList());
+
+            for (int i = 0; i < subjects.size(); i++) {
+                for (int j = i + 1; j < subjects.size(); j++) {
+                    conflicts.get(subjects.get(i).getSubjectCode()).add(subjects.get(j).getSubjectCode());
+                    conflicts.get(subjects.get(j).getSubjectCode()).add(subjects.get(i).getSubjectCode());
+                }
+            }
+        }
+        return conflicts;
     }
 
-    private void swap(List<Ngay> list, int i, int j) {
-        Ngay temp = list.get(i);
-        list.set(i, list.get(j));
-        list.set(j, temp);
+    private List<ExamRoom> assignExamRooms(Subject subject, List<ExamRoom> rooms) {
+        List<Student> students = studentRepository.findByDanhSachMonHoc_MaMon(subject.getSubjectCode());
+        int totalStudents = students.size();
+        List<ExamRoom> assignedRooms = new ArrayList<>();
+
+        for (ExamRoom room : rooms) {
+            if (totalStudents <= 0) break;
+            int assigned = Math.min(totalStudents, room.getQuantity());
+            totalStudents -= assigned;
+            assignedRooms.add(room);
+        }
+
+        if (totalStudents > 0) {
+            throw new RuntimeException("Không đủ phòng thi cho môn: " + subject.getTenMon());
+        }
+        return assignedRooms;
     }
 }

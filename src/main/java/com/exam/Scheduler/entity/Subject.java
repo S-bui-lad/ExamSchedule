@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 @Table(name = "Subject")
@@ -14,13 +17,41 @@ public class Subject {
     private String maMon;
     private String tenMon;
     private String nhom;
-    private String to;
-    private String lop;
-    private String MSSV;
-    private String fristName;
-    private String lastName;
-    private String email;
+    @ManyToMany(mappedBy = "danhSachMonHoc")
+    private List<Student> danhSachSinhVien = new ArrayList<>();
+
+    @Getter
+    private String subjectCode;
+
+    public void setSubjectCode(String subjectCode) {
+        this.subjectCode = subjectCode;
+    }
+
+    public String getSubjectCode(){
+        return subjectCode;
+    }
+
+    public String getNest() {
+        return nest;
+    }
+
+    public void setNest(String nest) {
+        this.nest = nest;
+    }
+
+    private String nest;
     private String hinhthuc;
+
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudentExam> studentExams;
+
+    public List<StudentExam> getStudentExams() {
+        return studentExams;
+    }
+
+    public void setStudentExams(List<StudentExam> studentExams) {
+        this.studentExams = studentExams;
+    }
 
     public Long getId() {
         return id;
@@ -54,55 +85,7 @@ public class Subject {
         this.nhom = nhom;
     }
 
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
-    }
-
-    public String getLop() {
-        return lop;
-    }
-
-    public void setLop(String lop) {
-        this.lop = lop;
-    }
-
-    public String getMSSV() {
-        return MSSV;
-    }
-
-    public void setMSSV(String MSSV) {
-        this.MSSV = MSSV;
-    }
-
-    public String getFristName() {
-        return fristName;
-    }
-
-    public void setFristName(String fristName) {
-        this.fristName = fristName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getHinhthuc() {
+       public String getHinhthuc() {
         return hinhthuc;
     }
 

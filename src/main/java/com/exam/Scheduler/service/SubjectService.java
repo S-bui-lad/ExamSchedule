@@ -30,7 +30,6 @@ public class SubjectService {
         }
         return null;
     }
-
     public List<Subject> fetchAllSubject(){
         return this.subjectRepository.findAll();
     }
@@ -39,11 +38,9 @@ public class SubjectService {
         Subject currentSubject = this.fetchSubjectById(reqSubject.getId());
         if (currentSubject != null){
             currentSubject.setMaMon(reqSubject.getMaMon());
-            currentSubject.setTo(reqSubject.getTo());
+            currentSubject.setNest(reqSubject.getNest());
             currentSubject.setNhom(reqSubject.getNhom());
-            currentSubject.setFristName(reqSubject.getFristName());
-            currentSubject.setLop(reqSubject.getLop());
-            currentSubject.setLastName(reqSubject.getLastName());
+            currentSubject.setHinhthuc(reqSubject.getHinhthuc());
 
             currentSubject = this.subjectRepository.save(currentSubject);
         }
