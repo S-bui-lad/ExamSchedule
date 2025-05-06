@@ -13,6 +13,8 @@ public class Teacher {
     private Long id;
     private String name;
     private boolean status;
+    private String khoa;
+
 
     public Long getId() {
         return id;
@@ -20,6 +22,14 @@ public class Teacher {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getKhoa() {
+        return khoa;
+    }
+
+    public void setKhoa(String khoa) {
+        this.khoa = khoa;
     }
 
     public String getName() {

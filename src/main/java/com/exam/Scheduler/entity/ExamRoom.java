@@ -12,8 +12,17 @@ public class ExamRoom {
     private Long id;
 
     private String MP;
+    private String TenPhong;
+
+    public String getTenPhong() {
+        return TenPhong;
+    }
+
+    public void setTenPhong(String tenPhong) {
+        TenPhong = tenPhong;
+    }
+
     private int quantity;
-    private String roomCode;
 
     public int getQuantity() {
         return quantity;

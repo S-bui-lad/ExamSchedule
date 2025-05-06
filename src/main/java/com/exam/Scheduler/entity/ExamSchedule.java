@@ -1,5 +1,6 @@
 package com.exam.Scheduler.entity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class ExamSchedule {
@@ -7,16 +8,26 @@ public class ExamSchedule {
     private int day;
     private int slot;
     private List<ExamRoom> assignedRooms;
+    private LocalDate examDate;
 
-    public ExamSchedule(Subject subject, int day, int slot, List<ExamRoom> assignedRooms) {
+    public ExamSchedule(Subject subject, int day, int slot, List<ExamRoom> assignedRooms, LocalDate examDate) {
         this.subject = subject;
         this.day = day;
         this.slot = slot;
         this.assignedRooms = assignedRooms;
+        this.examDate = examDate;
     }
 
     public Subject getSubject() {
         return subject;
+    }
+
+    public LocalDate getExamDate() {
+        return examDate;
+    }
+
+    public void setExamDate(LocalDate examDate) {
+        this.examDate = examDate;
     }
 
     public void setSubject(Subject subject) {
