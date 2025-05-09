@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ExamScheduleService {
@@ -85,8 +86,6 @@ public class ExamScheduleService {
 
         return examSchedules;
     }
-
-
     private Map<String, Set<String>> buildConflictGraph() {
         Map<String, Set<String>> conflicts = new HashMap<>();
         List<Student> students = studentRepository.findAll();

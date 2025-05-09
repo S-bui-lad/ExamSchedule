@@ -3,6 +3,8 @@ package com.exam.Scheduler.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 @Table(name = "Exam Room")
@@ -21,6 +23,9 @@ public class ExamRoom {
     public void setTenPhong(String tenPhong) {
         TenPhong = tenPhong;
     }
+
+    @ManyToMany(mappedBy = "assignedRooms")
+    private List<ExamSchedule> examSchedules;
 
     private int quantity;
 

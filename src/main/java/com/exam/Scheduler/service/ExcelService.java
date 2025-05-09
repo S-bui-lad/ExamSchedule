@@ -39,6 +39,7 @@ public class ExcelService {
             ExamRoom newExamRoom = new ExamRoom();
             newExamRoom.setMP(getCellValue(sheet, i, 0)); // Mã phòng thi
             newExamRoom.setQuantity(parseInteger(getCellValue(sheet, i, 1))); // Sức chứa
+            newExamRoom.setTenPhong(getCellValue(sheet,i,2));
             newExamRoom.setNote(getCellValue(sheet, i, 3)); // Ghi chú
 
             examRooms.add(examRoomService.handleCreateExamRoom(newExamRoom));

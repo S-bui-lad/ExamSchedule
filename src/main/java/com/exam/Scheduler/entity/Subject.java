@@ -20,6 +20,9 @@ public class Subject {
     @ManyToMany(mappedBy = "danhSachMonHoc")
     private List<Student> danhSachSinhVien = new ArrayList<>();
 
+    @OneToMany(mappedBy = "subject")
+    private List<ExamSchedule> examSchedules;
+
     @Getter
     private String subjectCode;
 
