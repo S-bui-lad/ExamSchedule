@@ -29,6 +29,7 @@ public class ExcelService {
 
     // Đọc danh sách phòng thi từ file Excel
     public List<ExamRoom> readExamRoom(MultipartFile file) throws IOException, BiffException {
+        examRoomService.deleteAllExamRooms();
         List<ExamRoom> examRooms = new ArrayList<>();
         InputStream inputStream = file.getInputStream();
         Workbook workbook = Workbook.getWorkbook(inputStream);
@@ -48,6 +49,7 @@ public class ExcelService {
 
     // Đọc danh sách môn học từ file Excel
     public List<Subject> readSubject(MultipartFile file) throws IOException, BiffException {
+        subjectService.deleteAllSubjects();
         List<Subject> subjects = new ArrayList<>();
         InputStream inputStream = file.getInputStream();
         Workbook workbook = Workbook.getWorkbook(inputStream);
@@ -69,6 +71,7 @@ public class ExcelService {
 
     // Đọc danh sách SV từ file excel
     public List<Student> readStudent(MultipartFile file) throws IOException, BiffException{
+        studentService.deleteAllStudents();
         List<Student> students = new ArrayList<>();
         InputStream inputStream = file.getInputStream();
         Workbook workbook = Workbook.getWorkbook(inputStream);

@@ -2,6 +2,7 @@ package com.exam.Scheduler.service;
 
 import com.exam.Scheduler.entity.*;
 import com.exam.Scheduler.repository.ExamRoomRepository;
+import com.exam.Scheduler.repository.ExamScheduleRepository;
 import com.exam.Scheduler.repository.StudentRepository;
 import com.exam.Scheduler.repository.SubjectRepository;
 import org.springframework.stereotype.Service;
@@ -14,17 +15,20 @@ public class ExamScheduleService {
     private final SubjectRepository subjectRepository;
     private final StudentRepository studentRepository;
     private final ExamRoomRepository examRoomRepository;
-
-    private final StudentService studentService;
+    private final ExamScheduleRepository examScheduleRepository;
 
     private static final int EXAM_DAYS = 14;
     private static final int EXAMS_PER_DAY = 4;
 
-    public ExamScheduleService(SubjectRepository subjectRepository, StudentRepository studentRepository, ExamRoomRepository examRoomRepository, StudentService studentService) {
+    public ExamScheduleService(SubjectRepository subjectRepository, StudentRepository studentRepository, ExamRoomRepository examRoomRepository, ExamScheduleRepository examScheduleRepository) {
         this.subjectRepository = subjectRepository;
         this.studentRepository = studentRepository;
         this.examRoomRepository = examRoomRepository;
-        this.studentService = studentService;
+        this.examScheduleRepository = examScheduleRepository;
+    }
+
+    public List<ExamSchedule> getAllExamSchedules() {
+        return examScheduleRepository.findAllByOrderByExamDateAsc();
     }
 
     public List<ExamSchedule> scheduleExams(LocalDate startDate) {

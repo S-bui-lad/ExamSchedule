@@ -23,6 +23,10 @@ public class SubjectService {
         this.subjectRepository.deleteById(id);
     }
 
+    public void deleteAllSubjects() {
+        subjectRepository.deleteAll();
+    }
+
     public Subject fetchSubjectById(long id){
         Optional<Subject> subjectOptional = this.subjectRepository.findById(id);
         if (subjectOptional.isPresent()){

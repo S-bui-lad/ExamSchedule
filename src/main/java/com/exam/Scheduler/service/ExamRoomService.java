@@ -23,6 +23,10 @@ public class ExamRoomService {
         this.examRoomRepository.deleteById(id);
     }
 
+    public void deleteAllExamRooms() {
+        examRoomRepository.deleteAll();
+    }
+
     public ExamRoom fetchExamRoomById(long id){
         Optional<ExamRoom> examRoomOptional = this.examRoomRepository.findById(id);
         if (examRoomOptional.isPresent()){

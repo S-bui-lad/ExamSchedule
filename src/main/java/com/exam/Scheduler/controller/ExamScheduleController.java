@@ -5,6 +5,7 @@ import com.exam.Scheduler.entity.Subject;
 import com.exam.Scheduler.service.ExamScheduleService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,5 +26,11 @@ public class ExamScheduleController {
     public List<ExamSchedule> generateExamSchedule(
             @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate) {
         return examScheduleService.scheduleExams(startDate);
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<List<ExamSchedule>> getExamScheduleHistory() {
+        List<ExamSchedule> schedules = examScheduleService.getAllExamSchedules();
+        return ResponseEntity.ok(schedules);
     }
 }

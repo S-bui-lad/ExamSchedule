@@ -24,6 +24,10 @@ public class StudentService {
         this.studentRepository.deleteById(id);
     }
 
+    public void deleteAllStudents() {
+        studentRepository.deleteAll();
+    }
+
     public Student fetchStudentById(long id){
         Optional<Student> studentOptional = this.studentRepository.findById(id);
         if(studentOptional.isPresent()){
