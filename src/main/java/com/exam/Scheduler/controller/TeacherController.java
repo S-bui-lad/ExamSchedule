@@ -44,4 +44,19 @@ public class TeacherController {
         Teacher sonTeacher = this.teacherService.handleUpdateTeacher(teacher);
         return ResponseEntity.status(HttpStatus.OK).body(sonTeacher);
     }
+    @GetMapping("/teachers/filter")
+    public ResponseEntity<List<Teacher>> filterTeachers(
+            @RequestParam(required = false) Boolean status,
+            @RequestParam(required = false) String mgv,
+            @RequestParam(required = false) String khoa
+    ) {
+        List<Teacher> filtered = teacherService.filterTeachers(status, mgv, khoa);
+        return ResponseEntity.ok(filtered);
+    }
+
+    @GetMapping("/teachers/search")
+    public ResponseEntity<List<Teacher>> searchTeachers(@RequestParam String name) {
+        List<Teacher> found = teacherService.searchTeachersByName(name);
+        return ResponseEntity.ok(found);
+    }
 }

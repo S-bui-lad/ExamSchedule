@@ -25,10 +25,7 @@ public class TeacherService {
 
     public Teacher fetchTeacherById(long id){
         Optional<Teacher> teacherOptional = this.teacherRepository.findById(id);
-        if (teacherOptional.isPresent()){
-            return teacherOptional.get();
-        }
-        return null;
+        return teacherOptional.orElse(null);
     }
 
     public List<Teacher> fetchAllTeacher(){
@@ -40,9 +37,22 @@ public class TeacherService {
         if (currentTeacher != null){
             currentTeacher.setStatus(reqTeacher.isStatus());
             currentTeacher.setName(reqTeacher.getName());
+            currentTeacher.setMGV(reqTeacher.getMGV());
             currentTeacher.setKhoa(reqTeacher.getKhoa());
             currentTeacher = this.teacherRepository.save(currentTeacher);
         }
         return currentTeacher;
+    }
+    public List<Teacher> filterTeachers(Boolean status, String mgv, String khoa) {
+        return teacherRepository.findAll().stream()
+                .filter(t -> status == null || t.isStatus() == status)
+                .filter(t -> mgv == null || t.getMGV().toLowerCase().contains(mgv.toLowerCase()))
+                .filter(t -> khoa == null || t.getKhoa().toLowerCase().contains(khoa.toLowerCase()))
+                .toList();
+    }
+    public List<Teacher> searchTeachersByName(String name) {
+        return teacherRepository.findAll().stream()
+                .filter(t -> t.getName().toLowerCase().contains(name.toLowerCase()))
+                .toList();
     }
 }
