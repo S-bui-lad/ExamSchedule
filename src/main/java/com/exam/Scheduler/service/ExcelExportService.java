@@ -28,7 +28,7 @@ public class ExcelExportService {
             for (int i = 0; i < schedules.size(); i++) {
                 ExamSchedule schedule = schedules.get(i);
                 int row = i + 1;
-                sheet.addCell(new Label(0, row, schedule.getSubject().getSubjectCode()));
+                sheet.addCell(new Label(0, row, schedule.getSubject().getMaMon()));
                 sheet.addCell(new Label(1, row, schedule.getSubject().getTenMon()));
                 sheet.addCell(new Label(2, row, "Ngày " + schedule.getExamDate()));
                 sheet.addCell(new Label(3, row, "Ca " + schedule.getSlot()));

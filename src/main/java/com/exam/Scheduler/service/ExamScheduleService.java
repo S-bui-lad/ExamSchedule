@@ -41,7 +41,7 @@ public class ExamScheduleService {
 
         // Sắp xếp môn học theo số lượng xung đột giảm dần
         subjects.sort((s1, s2) ->
-                Integer.compare(conflicts.get(s2.getSubjectCode()).size(), conflicts.get(s1.getSubjectCode()).size())
+                Integer.compare(conflicts.get(s2.getMaMon()).size(), conflicts.get(s1.getMaMon()).size())
         );
 
         // Sắp xếp phòng theo sức chứa giảm dần
@@ -54,7 +54,7 @@ public class ExamScheduleService {
             Set<Integer> usedSlots = new HashSet<>();
 
             // Lấy các slot đã dùng bởi các môn học xung đột
-            for (String neighbor : conflicts.getOrDefault(subject.getSubjectCode(), new HashSet<>())) {
+            for (String neighbor : conflicts.getOrDefault(subject.getMaMon(), new HashSet<>())) {
                 if (subjectSchedule.containsKey(neighbor)) {
                     usedSlots.add(subjectSchedule.get(neighbor));
                 }
@@ -73,7 +73,7 @@ public class ExamScheduleService {
                 }
             }
 
-            subjectSchedule.put(subject.getSubjectCode(), slotCode);
+            subjectSchedule.put(subject.getMaMon(), slotCode);
 
             int[] daySlot = decodeSlot(slotCode); // [ngày, ca]
             LocalDate examDate = startDate.plusDays(daySlot[0] - 1);
@@ -91,7 +91,7 @@ public class ExamScheduleService {
 
         // Đảm bảo tất cả các môn học đều có entry trong conflicts
         for (Subject subject : subjectRepository.findAll()) {
-            conflicts.put(subject.getSubjectCode(), new HashSet<>());
+            conflicts.put(subject.getMaMon(), new HashSet<>());
         }
 
         for (Student student : students) {
@@ -101,8 +101,8 @@ public class ExamScheduleService {
 
             for (int i = 0; i < subjects.size(); i++) {
                 for (int j = i + 1; j < subjects.size(); j++) {
-                    conflicts.get(subjects.get(i).getSubjectCode()).add(subjects.get(j).getSubjectCode());
-                    conflicts.get(subjects.get(j).getSubjectCode()).add(subjects.get(i).getSubjectCode());
+                    conflicts.get(subjects.get(i).getMaMon()).add(subjects.get(j).getMaMon());
+                    conflicts.get(subjects.get(j).getMaMon()).add(subjects.get(i).getMaMon());
                 }
             }
         }
@@ -121,28 +121,28 @@ public class ExamScheduleService {
     }
 
     // Kiểm tra đủ phòng còn trống cho môn này trong slot
-    private boolean canAssignRooms(Subject subject, List<ExamRoom> rooms, Set<String> usedRoomNames) {
-        int totalStudents = studentRepository.findByDanhSachMonHoc_MaMon(subject.getSubjectCode()).size();
+    private boolean canAssignRooms(Subject subject, List<ExamRoom> rooms, Set<String> usedRoomIds) {
+        int totalStudents = studentRepository.findByDanhSachMonHoc_MaMon(subject.getMaMon()).size();
         int available = rooms.stream()
-                .filter(r -> !usedRoomNames.contains(r.getTenPhong()))
+                .filter(r -> !usedRoomIds.contains(r.getMP()))
                 .mapToInt(ExamRoom::getQuantity)
                 .sum();
         return totalStudents <= available;
     }
 
-    // Phân bổ phòng và đánh dấu là đã dùng cho slot đó
-    private List<ExamRoom> assignExamRooms(Subject subject, List<ExamRoom> rooms, Set<String> usedRoomNames) {
-        List<Student> students = studentRepository.findByDanhSachMonHoc_MaMon(subject.getSubjectCode());
+    private List<ExamRoom> assignExamRooms(Subject subject, List<ExamRoom> rooms, Set<String> usedRoomIds) {
+        List<Student> students = studentRepository.findByDanhSachMonHoc_MaMon(subject.getMaMon());
         int totalStudents = students.size();
         List<ExamRoom> assignedRooms = new ArrayList<>();
+
         for (ExamRoom room : rooms) {
             if (totalStudents <= 0) break;
-            if (usedRoomNames.contains(room.getMP())) continue;
+            if (usedRoomIds.contains(room.getMP())) continue;
 
             int assigned = Math.min(totalStudents, room.getQuantity());
             totalStudents -= assigned;
             assignedRooms.add(room);
-            usedRoomNames.add(room.getTenPhong());
+            usedRoomIds.add(room.getMP());
         }
 
         if (totalStudents > 0) {
@@ -151,4 +151,5 @@ public class ExamScheduleService {
 
         return assignedRooms;
     }
+
 }

@@ -23,17 +23,6 @@ public class Subject {
     @OneToMany(mappedBy = "subject")
     private List<ExamSchedule> examSchedules;
 
-    @Getter
-    private String subjectCode;
-
-    public void setSubjectCode(String subjectCode) {
-        this.subjectCode = subjectCode;
-    }
-
-    public String getSubjectCode(){
-        return subjectCode;
-    }
-
     public String getNest() {
         return nest;
     }

@@ -50,7 +50,7 @@ public class ExcelService {
 
     // Đọc danh sách môn học từ file Excel
     public List<Subject> readSubject(MultipartFile file) throws IOException, BiffException {
-        subjectService.deleteAllSubjects();
+//        subjectService.deleteAllSubjects();
         List<Subject> subjects = new ArrayList<>();
         InputStream inputStream = file.getInputStream();
         Workbook workbook = Workbook.getWorkbook(inputStream);
@@ -71,8 +71,7 @@ public class ExcelService {
     }
 
     // Đọc danh sách SV từ file excel
-    public List<Student> readStudent(MultipartFile file) throws IOException, BiffException{
-        studentService.deleteAllStudents();
+    public List<Student> readStudent(MultipartFile file) throws IOException, BiffException {
         List<Student> students = new ArrayList<>();
         InputStream inputStream = file.getInputStream();
         Workbook workbook = Workbook.getWorkbook(inputStream);
@@ -90,8 +89,8 @@ public class ExcelService {
             if (subjectCodes != null && !subjectCodes.isEmpty()) {
                 for (String code : subjectCodes.split(",")) {
                     code = code.trim();
-                    Optional<Subject> subjectOptional = subjectRepository.findByMaMon(code);
-                    subjectOptional.ifPresent(subjects::add); // Chỉ thêm nếu tìm thấy
+                    List<Subject> subjectList = subjectRepository.findByMaMon(code); // Lấy danh sách môn học thay vì một môn
+                    subjects.addAll(subjectList); // Thêm tất cả các môn học tìm được vào Set
                 }
             }
 
@@ -102,7 +101,6 @@ public class ExcelService {
         workbook.close();
         return students;
     }
-
 
     // Phương thức lấy giá trị từ ô Excel, tránh lỗi NullPointerException
     private String getCellValue(Sheet sheet, int row, int column) {
