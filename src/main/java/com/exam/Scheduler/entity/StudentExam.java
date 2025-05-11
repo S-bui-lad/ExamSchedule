@@ -1,7 +1,11 @@
 package com.exam.Scheduler.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "students_exam")
 public class StudentExam {
@@ -13,6 +17,7 @@ public class StudentExam {
     @JoinColumn(name = "student_id")
     private Student student;
 
+    private int isRemove =0;
     public Long getId() {
         return id;
     }

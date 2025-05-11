@@ -1,9 +1,13 @@
 package com.exam.Scheduler.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.List;
-
+@Getter
+@Setter
 @Entity
 @Table(name = "exam_schedule")
 public class ExamSchedule {
@@ -13,10 +17,11 @@ public class ExamSchedule {
     private Long id;
 
     private int day;
+    private int isRemove=0;
     private int slot;
     private LocalDate examDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subject_id")
     private Subject subject;
 

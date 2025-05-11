@@ -13,6 +13,7 @@ public class User {
     private String name;
     private String email;
     private String password;
+    private int isRemove=0;
 
     public long getId() {
         return id;

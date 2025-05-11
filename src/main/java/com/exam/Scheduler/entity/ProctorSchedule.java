@@ -1,7 +1,11 @@
 package com.exam.Scheduler.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 public class ProctorSchedule {
 
@@ -19,6 +23,7 @@ public class ProctorSchedule {
     private int slot;
 
     private String roomName;
+    private int isRemove=0;
 
     public Long getId() {
         return id;

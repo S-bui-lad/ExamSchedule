@@ -14,6 +14,7 @@ public class Teacher {
     private String name;
     private boolean status;
     private String khoa;
+    private int isRemove=0;
 
 
     public Long getId() {

@@ -10,6 +10,8 @@ import java.util.List;
 @Table(name = "students")
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +23,7 @@ public class Student {
     private String name;
     private String lop;
     private String email;
+    private int isRemove=0;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.MERGE})
     @JoinTable(

@@ -15,6 +15,7 @@ public class Subject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String maMon;
+    private int isRemove = 0;
     private String tenMon;
     private String nhom;
     @ManyToMany(mappedBy = "danhSachMonHoc", cascade = CascadeType.REMOVE)
