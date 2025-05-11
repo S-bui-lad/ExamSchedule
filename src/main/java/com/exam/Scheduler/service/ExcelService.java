@@ -50,7 +50,7 @@ public class ExcelService {
 
     // Đọc danh sách môn học từ file Excel
     public List<Subject> readSubject(MultipartFile file) throws IOException, BiffException {
-//        subjectService.deleteAllSubjects();
+        subjectService.deleteAllSubjects();
         List<Subject> subjects = new ArrayList<>();
         InputStream inputStream = file.getInputStream();
         Workbook workbook = Workbook.getWorkbook(inputStream);

@@ -17,10 +17,10 @@ public class Subject {
     private String maMon;
     private String tenMon;
     private String nhom;
-    @ManyToMany(mappedBy = "danhSachMonHoc")
+    @ManyToMany(mappedBy = "danhSachMonHoc", cascade = CascadeType.REMOVE)
     private List<Student> danhSachSinhVien = new ArrayList<>();
 
-    @OneToMany(mappedBy = "subject")
+    @OneToMany(mappedBy = "subject",cascade = CascadeType.REMOVE )
     private List<ExamSchedule> examSchedules;
 
     public String getNest() {
@@ -34,7 +34,7 @@ public class Subject {
     private String nest;
     private String hinhthuc;
 
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<StudentExam> studentExams;
 
     public List<StudentExam> getStudentExams() {

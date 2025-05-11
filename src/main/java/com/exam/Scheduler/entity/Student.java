@@ -22,7 +22,7 @@ public class Student {
     private String lop;
     private String email;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.MERGE})
     @JoinTable(
             name = "sinh_vien_mon_hoc",
             joinColumns = @JoinColumn(name = "sinh_vien_id"),
@@ -30,7 +30,7 @@ public class Student {
     )
     private List<Subject> danhSachMonHoc = new ArrayList<>();
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "student", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<StudentExam> studentExams = new ArrayList<>();
 
     public Long getId() {

@@ -83,6 +83,7 @@ public class ExamScheduleService {
 
             examSchedules.add(new ExamSchedule(subject, daySlot[0], daySlot[1], assignedRooms, examDate));
         }
+        this.examScheduleRepository.saveAll(examSchedules);
         return examSchedules;
     }
     private Map<String, Set<String>> buildConflictGraph() {
