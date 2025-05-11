@@ -1,0 +1,338 @@
+.excel-grid-container {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 24px;
+    /*display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    width: 100%;
+    gap: 16px;
+    margin: 20px 0;*/ /* Use flexbox for layout */
+  }
+  
+  .excel-grid-item {
+    width: 100%; 
+    height: auto;  
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    flex: 1;                  /* Each uploader takes equal width */
+    min-width: 0;             /* Allows items to shrink if needed */
+    flex: 1 1 30%; /* Grow, shrink, and basis */
+    min-width: 200px;
+    max-width: calc(33.333% - 16px);
+    /*flex: 1;
+    min-width: 0; 
+    position: relative;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #fff;
+    transition: all 0.2s ease;*/
+  }
+  .excel-grid-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  @media (min-width: 900px) {
+    .excel-grid-item {
+      grid-column: span 4;
+    }
+  }
+  
+  .excel-grid-full {
+    grid-column: 1 / -1;
+  }
+  
+  .button-container {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 24px;
+    margin-bottom: 16px;
+  }
+  
+  .process-button, .download-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+  
+  .process-button {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .process-button:hover {
+    background-color: #3d8b40;
+  }
+  
+  .download-button {
+    background-color: #2196f3;
+    color: white;
+  }
+  
+  .download-button:hover {
+    background-color: #0b7dda;
+  }
+  
+  .process-button:disabled, .download-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .error-alert {
+    background-color: #fdeded;
+    color: #f44336;
+    padding: 16px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+  }
+  
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #09f;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .results-container {
+    margin-top: 24px;
+    padding: 16px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+  }
+
+  .excel-uploader {
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #f8f9fa;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .drop-zone {
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: all 0.2s ease;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .drop-zone:hover {
+    border-color: #1976d2;
+    background-color: #f0f7ff;
+  }
+  
+  .browse-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1976d2;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    margin-top: 15px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .browse-button:hover {
+    background-color: #0d5dad;
+  }
+  
+  .file-selected {
+    display: flex;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    border-radius: 4px;
+    background-color: white;
+  }
+  
+  .file-name {
+    margin-left: 8px;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .change-file {
+    background-color: transparent;
+    border: none;
+    color: #1976d2;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* Update container to use flex layout instead of grid for this view */
+  .upload-container-centered {
+    display: flex;
+    flex-direction: row;  /* Stack elements vertically */
+    width: 100%;
+    gap: 24px;
+  }
+
+/* File uploader horizontal layout */
+.upload-container-centered {
+  display: flex;
+  flex-direction: row;       /* Makes items align horizontally */
+  justify-content: space-between;
+  gap: 16px;                 /* Space between uploaders */
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+/* Make it responsive - stack vertically on mobile */
+@media (max-width: 768px) {
+  .upload-container-centered {
+    flex-direction: column;
+    gap: 24px;
+  }
+}
+
+/* Add to import.css */
+.upload-container-centered {
+  display: flex !important;  /* Force flex display */
+  flex-direction: row !important; /* Force horizontal layout */
+  justify-content: space-between;
+  width: 100%;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* Ensure responsive behavior */
+@media (max-width: 768px) {
+  .upload-container-centered {
+    flex-direction: column !important;
+  }
+  
+  .excel-grid-item {
+    max-width: none;
+  }
+}
+
+/* Room List Button */
+.room-list-button {
+  background: none;
+  border: none;
+  color: #2196f3;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}
+
+.room-list-button:hover {
+  color: #1976d2;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.room-list-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.room-list-table th,
+.room-list-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.room-list-table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+}
+
+.room-list-table tr:hover {
+  background-color: #f9f9f9;
+}

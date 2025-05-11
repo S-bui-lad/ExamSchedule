@@ -1,0 +1,107 @@
+.uploader-container {
+    display: inline-block;
+    height: 100%;
+    cursor: pointer;
+  }
+  
+  .uploader-paper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    border-radius: 8px;
+    background-color: #f6f9fc;
+    border: 2px dashed #e0e0e0;
+    height: 100%;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+  }
+  
+  .uploader-paper:hover {
+    border-color: #1e88e5;
+  }
+  
+  .uploader-paper-active {
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  }
+  
+  .uploader-title {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .uploader-description, .uploader-instruction {
+    color: #757575;
+    text-align: center;
+    margin: 4px 0;
+    font-size: 0.875rem;
+  }
+  
+  .uploader-instruction {
+    margin-top: 16px;
+  }
+  
+  .uploader-button {
+    margin-top: 16px;
+    padding: 8px 16px;
+    border: 1px solid #1e88e5;
+    border-radius: 4px;
+    background-color: transparent;
+    color: #1e88e5;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
+  }
+  
+  .uploader-button:hover {
+    background-color: rgba(30, 136, 229, 0.04);
+  }
+  
+  .uploader-button-small {
+    padding: 4px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .hidden-input {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    white-space: nowrap;
+    width: 1px;
+  }
+  
+  .file-info {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+  }
+  
+  .file-name {
+    font-size: 0.875rem;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .file-size {
+    color: #757575;
+    margin-top: 8px;
+    font-size: 0.875rem;
+  }
+  .upload-container-centered {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }

@@ -1,0 +1,191 @@
+.upload-container-centered {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  margin: 0 auto 24px auto;
+  flex-wrap: wrap;
+}
+.excel-grid-container {
+    justify-content: center;
+    gap: 24px;
+}
+  .excel-grid-item {
+     width: 350px;
+    max-width: 100%;
+  }
+  
+  @media (min-width: 768px) {
+    .upload-container-centered {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  
+  .excel-grid-full {
+    grid-column: 1 / -1;
+  }
+  
+  .button-container {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+  
+  .process-button, .download-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 18px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+  }
+  
+  .process-button {
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+  }
+  
+  .process-button:hover {
+    background-color: #1976d2;
+  }
+  
+  .download-button {
+    background-color: transparent;
+    color: #f50057;
+    border: 1px solid #f50057;
+  }
+  
+  .download-button:hover {
+    background-color: rgba(245, 0, 87, 0.04);
+  }
+  
+  .process-button:disabled, .download-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .error-alert {
+    background-color: #ffebee;
+    color: #d32f2f;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+  }
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(30, 136, 229, 0.2);
+    border-top-color: #1e88e5;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .results-container {
+    margin-top: 24px;
+  }
+
+.centered-upload-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 24px 0;
+}
+
+.centered-excel-uploader {
+  width: 500px;
+  max-width: 100%;
+}
+
+.excel-file-uploader {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.drop-area {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  transition: all 0.2s ease;
+  background-color: #fff;
+}
+
+.drop-area:hover {
+  border-color: #2196f3;
+  background-color: #f0f7ff;
+}
+
+.file-explorer-button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin: 16px auto 0;
+}
+
+.file-explorer-button:hover {
+  background-color: #1565c0;
+}
+
+.file-selected {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  padding: 10px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.file-name {
+  flex: 1;
+  margin-left: 8px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.change-button {
+  color: #1976d2;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-left: 8px;
+}
