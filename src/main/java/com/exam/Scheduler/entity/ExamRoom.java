@@ -12,7 +12,6 @@ public class ExamRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String MP;
     private String TenPhong;
 

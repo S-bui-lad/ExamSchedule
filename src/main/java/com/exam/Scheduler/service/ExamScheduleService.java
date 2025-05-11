@@ -83,7 +83,6 @@ public class ExamScheduleService {
 
             examSchedules.add(new ExamSchedule(subject, daySlot[0], daySlot[1], assignedRooms, examDate));
         }
-
         return examSchedules;
     }
     private Map<String, Set<String>> buildConflictGraph() {
@@ -125,7 +124,7 @@ public class ExamScheduleService {
     private boolean canAssignRooms(Subject subject, List<ExamRoom> rooms, Set<String> usedRoomNames) {
         int totalStudents = studentRepository.findByDanhSachMonHoc_MaMon(subject.getSubjectCode()).size();
         int available = rooms.stream()
-                .filter(r -> !usedRoomNames.contains(r.getMP()))
+                .filter(r -> !usedRoomNames.contains(r.getTenPhong()))
                 .mapToInt(ExamRoom::getQuantity)
                 .sum();
         return totalStudents <= available;
@@ -136,7 +135,6 @@ public class ExamScheduleService {
         List<Student> students = studentRepository.findByDanhSachMonHoc_MaMon(subject.getSubjectCode());
         int totalStudents = students.size();
         List<ExamRoom> assignedRooms = new ArrayList<>();
-
         for (ExamRoom room : rooms) {
             if (totalStudents <= 0) break;
             if (usedRoomNames.contains(room.getMP())) continue;
@@ -144,7 +142,7 @@ public class ExamScheduleService {
             int assigned = Math.min(totalStudents, room.getQuantity());
             totalStudents -= assigned;
             assignedRooms.add(room);
-            usedRoomNames.add(room.getMP());
+            usedRoomNames.add(room.getTenPhong());
         }
 
         if (totalStudents > 0) {
