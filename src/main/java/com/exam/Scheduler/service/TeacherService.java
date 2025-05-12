@@ -40,6 +40,7 @@ public class TeacherService {
         if (currentTeacher != null){
             currentTeacher.setStatus(reqTeacher.isStatus());
             currentTeacher.setName(reqTeacher.getName());
+            currentTeacher.setMGV(reqTeacher.getMGV());
             currentTeacher.setKhoa(reqTeacher.getKhoa());
             currentTeacher = this.teacherRepository.save(currentTeacher);
         }

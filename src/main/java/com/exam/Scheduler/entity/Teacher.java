@@ -11,6 +11,7 @@ public class Teacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String MGV;
     private String name;
     private boolean status;
     private String khoa;

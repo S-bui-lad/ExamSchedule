@@ -107,12 +107,11 @@ public class ExcelService {
         return (sheet.getColumns() > column && sheet.getCell(column, row) != null) ? sheet.getCell(column, row).getContents().trim() : "";
     }
 
-    // Chuyển đổi String sang Integer, tránh lỗi NumberFormatException
     private int parseInteger(String value) {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            return 0; // Giá trị mặc định nếu không đọc được số
+            return 0;
         }
     }
 }
