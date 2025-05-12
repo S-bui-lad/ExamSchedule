@@ -17,7 +17,7 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+//    @Column(unique = false, nullable = false)
     private String mssv; // Mã số sinh viên
 
     private String name;
