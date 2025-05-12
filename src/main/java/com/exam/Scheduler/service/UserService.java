@@ -2,7 +2,6 @@ package com.exam.Scheduler.service;
 
 import com.exam.Scheduler.entity.User;
 import com.exam.Scheduler.repository.UserRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,18 +39,23 @@ public class UserService {
         return  this.userRepository.findAll();
     }
 
-    public User handleUpdateUser(User reqUser){
-        User currentUser = this.fetchUserById(reqUser.getId());
-        if (currentUser != null){
-            currentUser.setEmail(reqUser.getEmail());
-            currentUser.setName(reqUser.getName());
-            currentUser.setPassword(reqUser.getPassword());
+    public User handleUpdateUser(long id, User reqUser) {
+        User currentUser = this.fetchUserById(id);
+        if (currentUser != null) {
+            if (reqUser.getEmail() != null) {
+                currentUser.setEmail(reqUser.getEmail());
+            }
+            if (reqUser.getName() != null) {
+                currentUser.setName(reqUser.getName());
+            }
+            if (reqUser.getPassword() != null) {
+                currentUser.setPassword(reqUser.getPassword());
+            }
 
-            currentUser =this.userRepository.save(currentUser);
+            currentUser = this.userRepository.save(currentUser);
         }
         return currentUser;
     }
-
     public boolean register(String email, String rawPassword, String name) {
         if (userRepository.findByEmail(email).isPresent()) {
             return false;

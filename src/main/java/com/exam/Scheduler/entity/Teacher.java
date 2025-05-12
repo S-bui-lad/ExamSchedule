@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Teacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Getter
     private String MGV;
     private String name;
     private boolean status;
@@ -28,6 +28,14 @@ public class Teacher {
 
     public String getKhoa() {
         return khoa;
+    }
+
+    public void setMGV(String MGV) {
+        this.MGV = MGV;
+    }
+
+    public String getMGV() {
+        return MGV;
     }
 
     public void setKhoa(String khoa) {

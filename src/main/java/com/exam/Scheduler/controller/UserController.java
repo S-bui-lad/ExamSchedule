@@ -5,6 +5,7 @@ import com.exam.Scheduler.service.UserService;
 import com.exam.Scheduler.util.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,11 +43,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(this.userService.fetchAllUser());
     }
 
-    @PutMapping("/users")
-    public ResponseEntity<User> updateUser(@RequestBody User user){
-        User sonUser = this.userService.handleUpdateUser(user);
-        return ResponseEntity.status(HttpStatus.OK).body(sonUser);
+    @PutMapping("/users/{id}")
+    public ResponseEntity<User> updateUser(@RequestBody User user, @PathVariable long id) {
+        User updatedUser = userService.handleUpdateUser(id, user);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User request) {
         boolean success = userService.register(request.getEmail(), request.getPassword(), request.getName());
