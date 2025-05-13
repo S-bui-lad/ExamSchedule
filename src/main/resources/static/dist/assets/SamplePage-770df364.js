@@ -1,0 +1,1 @@
+import{j as a,Y as e,a2 as s,z as i}from"./index-16114832.js";const t=()=>a.jsx(e,{title:"Sample Page",description:"this is Sample page",children:a.jsx(s,{title:"Sample Page",children:a.jsx(i,{children:"This is a sample page"})})});export{t as default};

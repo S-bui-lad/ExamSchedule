@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RequestMapping("/api/proctor")
 public class ProctorScheduleController {
     private final ProctorAssignmentService proctorAssignmentService;

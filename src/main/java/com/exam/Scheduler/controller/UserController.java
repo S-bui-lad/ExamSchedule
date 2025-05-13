@@ -5,12 +5,12 @@ import com.exam.Scheduler.service.UserService;
 import com.exam.Scheduler.util.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class UserController {
     private UserService userService;
     private final JwtUtil jwtUtil;
@@ -63,7 +63,7 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody User request) {
         User user = userService.authenticateAndReturnUser(request.getEmail(), request.getPassword());
         if (user != null) {
-            String token = jwtUtil.generateToken(user.getEmail());
+            String token = jwtUtil.generateToken(user.getId());
             return ResponseEntity.ok(token); // có thể trả về plain token hoặc wrap lại trong JSON
         } else {
             return ResponseEntity.status(401).body("Sai email hoặc mật khẩu");

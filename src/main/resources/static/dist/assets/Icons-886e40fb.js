@@ -1,0 +1,1 @@
+import{j as s,Y as t,a2 as e}from"./index-16114832.js";const i=()=>s.jsx(t,{title:"Icons",description:"this is Icons",children:s.jsx(e,{title:"Icons",children:s.jsx("iframe",{src:"https://tabler-icons.io/",title:"Inline Frame Example",frameBorder:0,width:"100%",height:"650"})})});export{i as default};

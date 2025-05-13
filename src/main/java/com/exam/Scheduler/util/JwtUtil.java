@@ -10,15 +10,17 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static final String SECRET = "your-256-bit-secret-your-256-bit-secret"; // 32 ký tự trở lên
+    private final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
     private final long EXPIRATION = 86400000; // 1 ngày
 
-    public String generateToken(String username) {
+    public String generateToken(long id) {
         return Jwts.builder()
-                .setSubject(username)
+                .claim("id", id)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(SECRET_KEY)
                 .compact();
     }
+
 }
 
