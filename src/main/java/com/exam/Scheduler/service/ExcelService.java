@@ -73,32 +73,66 @@ public class ExcelService {
     // Đọc danh sách SV từ file excel
     public List<Student> readStudent(MultipartFile file) throws IOException, BiffException {
         List<Student> students = new ArrayList<>();
-        InputStream inputStream = file.getInputStream();
-        Workbook workbook = Workbook.getWorkbook(inputStream);
-        Sheet sheet = workbook.getSheet(0);
+        Map<String, Subject> subjectCache = new HashMap<>();
 
-        for (int i = 1; i < sheet.getRows(); i++) {
-            Student newStudent = new Student();
-            newStudent.setMssv(getCellValue(sheet, i, 0));
-            newStudent.setName(getCellValue(sheet, i, 1));
-            newStudent.setLop(getCellValue(sheet, i, 2));
-            newStudent.setEmail(getCellValue(sheet, i, 3));
+        // Cache all subjects first
+        List<Subject> allSubjects = subjectRepository.findAll();
+        for (Subject subject : allSubjects) {
+            subjectCache.put(subject.getMaMon(), subject);
+        }
+        this.studentService.deleteAllStudents();
 
-            String subjectCodes = getCellValue(sheet, i, 4);
-            Set<Subject> subjects = new HashSet<>();
-            if (subjectCodes != null && !subjectCodes.isEmpty()) {
-                for (String code : subjectCodes.split(",")) {
-                    code = code.trim();
-                    List<Subject> subjectList = subjectRepository.findByMaMon(code); // Lấy danh sách môn học thay vì một môn
-                    subjects.addAll(subjectList); // Thêm tất cả các môn học tìm được vào Set
+        InputStream inputStream = null;
+        Workbook workbook = null;
+        try {
+            inputStream = file.getInputStream();
+            workbook = Workbook.getWorkbook(inputStream);
+            Sheet sheet = workbook.getSheet(0);
+            int batchSize = 100;
+            List<Student> batch = new ArrayList<>();
+
+            for (int i = 1; i < sheet.getRows(); i++) {
+                Student newStudent = new Student();
+                newStudent.setMssv(getCellValue(sheet, i, 0));
+                newStudent.setName(getCellValue(sheet, i, 1));
+                newStudent.setLop(getCellValue(sheet, i, 2));
+                newStudent.setEmail(getCellValue(sheet, i, 3));
+
+                String subjectCodes = getCellValue(sheet, i, 4);
+                Set<Subject> subjects = new HashSet<>();
+                if (subjectCodes != null && !subjectCodes.isEmpty()) {
+                    for (String code : subjectCodes.split(",")) {
+                        code = code.trim();
+                        Subject subject = subjectCache.get(code);
+                        if (subject != null) {
+                            subjects.add(subject);
+                        }
+                    }
+                }
+
+                newStudent.setDanhSachMonHoc(new ArrayList<>(subjects));
+                batch.add(newStudent);
+
+                // Process in batches
+                if (batch.size() >= batchSize) {
+                    students.addAll(studentService.saveAll(batch));
+                    batch.clear();
                 }
             }
 
-            newStudent.setDanhSachMonHoc(new ArrayList<>(subjects));
-            students.add(studentService.handlCreateStudent(newStudent));
+            // Process remaining students
+            if (!batch.isEmpty()) {
+                students.addAll(studentService.saveAll(batch));
+            }
+        } finally {
+            if (workbook != null) {
+                workbook.close();
+            }
+            if (inputStream != null) {
+                inputStream.close();
+            }
         }
 
-        workbook.close();
         return students;
     }
 

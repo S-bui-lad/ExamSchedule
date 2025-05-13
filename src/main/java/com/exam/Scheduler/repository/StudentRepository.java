@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long> {
-       @Query("SELECT s FROM Student s JOIN s.danhSachMonHoc m WHERE s.isRemove = 0 AND m.maMon = :maMon and m.isRemove=0")
+       @Query("SELECT DISTINCT s FROM Student s JOIN s.danhSachMonHoc m WHERE s.isRemove = 0 AND m.maMon = :maMon and m.isRemove=0")
        List<Student> findByDanhSachMonHoc_MaMon(@Param("maMon") String maMon);
 
        @Query("select s from Student s where s.isRemove=0 and s.id= :id")
@@ -32,4 +32,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
        @Query("update Student s set s.isRemove=1")
        void deleteAll();
 
+       @Query("SELECT s FROM Student s LEFT JOIN FETCH s.danhSachMonHoc")
+       List<Student> findAllWithSubjects();
 }

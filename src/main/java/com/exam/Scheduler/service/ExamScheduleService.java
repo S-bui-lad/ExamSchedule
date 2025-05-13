@@ -88,18 +88,19 @@ public class ExamScheduleService {
     }
     private Map<String, Set<String>> buildConflictGraph() {
         Map<String, Set<String>> conflicts = new HashMap<>();
-        List<Student> students = studentRepository.findAll();
-
+        
         // Đảm bảo tất cả các môn học đều có entry trong conflicts
         for (Subject subject : subjectRepository.findAll()) {
             conflicts.put(subject.getMaMon(), new HashSet<>());
         }
 
+        // Fetch all students with their subjects in a single query with eager loading
+        List<Student> students = studentRepository.findAllWithSubjects();
+        
         for (Student student : students) {
-            List<Subject> subjects = studentRepository.findById(student.getId())
-                    .map(Student::getDanhSachMonHoc)
-                    .orElse(Collections.emptyList());
-
+            List<Subject> subjects = student.getDanhSachMonHoc();
+            if (subjects == null) continue;
+            
             for (int i = 0; i < subjects.size(); i++) {
                 for (int j = i + 1; j < subjects.size(); j++) {
                     conflicts.get(subjects.get(i).getMaMon()).add(subjects.get(j).getMaMon());

@@ -36,7 +36,7 @@ public class StudentService {
         return  null;
     }
 
-      public List<Student> fetchAllStudent(){
+    public List<Student> fetchAllStudent(){
         return this.studentRepository.findAll();
     }
 
@@ -51,5 +51,9 @@ public class StudentService {
         }
 
         return currentStudent;
+    }
+    public List<Student> saveAll(List<Student> studentList)
+    {
+        return this.studentRepository.saveAll(studentList);
     }
 }
