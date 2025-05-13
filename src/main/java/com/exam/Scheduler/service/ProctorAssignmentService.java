@@ -87,7 +87,8 @@ public class ProctorAssignmentService {
                             assignment.day,
                             assignment.slot,
                             room,
-                            assignment.examDate
+                            assignment.examDate,
+                            1
                     ));
                 }
             }

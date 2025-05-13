@@ -25,6 +25,14 @@ public class ProctorSchedule {
     private String roomName;
     private int isRemove=0;
 
+    public int getIsRemove() {
+        return isRemove;
+    }
+
+    public void setIsRemove(int isRemove) {
+        this.isRemove = isRemove;
+    }
+
     public Long getId() {
         return id;
     }
@@ -87,12 +95,13 @@ public class ProctorSchedule {
     public ProctorSchedule() {
     }
 
-    public ProctorSchedule(Teacher teacher, Subject subject, int day, int slot, String roomName, String examDate) {
+    public ProctorSchedule(Teacher teacher, Subject subject, int day, int slot, String roomName, String examDate, int isRemove) {
         this.teacher = teacher;
         this.subject = subject;
         this.day = day;
         this.slot = slot;
         this.roomName = roomName;
         this.examDate = examDate;
+        this.isRemove = isRemove;
     }
 }
