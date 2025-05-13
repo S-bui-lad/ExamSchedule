@@ -1,25 +1,20 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import './App.css'
-
+import React from 'react';
 import { CssBaseline, ThemeProvider } from '@mui/material';
-import { useRoutes } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import Router from './routes/Router';
-
-import { baselightTheme } from "./theme/DefaultColors";
+import { baselightTheme } from './theme/DefaultColors';
+import './assets/css/mobile.css';
 
 function App() {
-  
-  const routing = useRoutes(Router);
-  const theme = baselightTheme;
-
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={baselightTheme}>
       <CssBaseline />
-      {routing}
+      {/* Xóa bỏ basename="/Modernize-Vite" từ BrowserRouter */}
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
     </ThemeProvider>
   );
 }
 
-export default App
+export default App;

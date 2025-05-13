@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IconCloudUpload, IconDownload, IconAlertTriangle } from '@tabler/icons-react';
+import { IconCloudUpload, IconDownload, IconAlertTriangle, IconCalendarTime } from '@tabler/icons-react';
 import PageContainer from '../../components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
 import ExcelFileUploader from './ExcelFileUploader';
@@ -69,15 +69,15 @@ const ExcelImportPage = () => {
       
       // Upload all files - REORDERED API calls
       const responses = await Promise.all([
-        fetch('http://localhost:8080/upload/exam-rooms', { // First call
+        fetch('http://172.20.10.2:8080/upload/exam-rooms', { // First call
           method: 'POST',
           body: roomsFormData
         }),
-        fetch('http://localhost:8080/upload/subjects', { // Second call
+        fetch('http://172.20.10.2:8080/upload/subjects', { // Second call
           method: 'POST',
           body: subjectsFormData
         }),
-        fetch('http://localhost:8080/upload/students', { // Third call
+        fetch('http://172.20.10.2:8080/upload/students', { // Third call
           method: 'POST',
           body: studentsFormData
         })
@@ -89,8 +89,8 @@ const ExcelImportPage = () => {
         throw new Error('Lỗi khi tải lên file Excel');
       }
       
-      // Step 2: Call the generate endpoint to process the data
-      const generateResponse = await fetch('http://localhost:8080/generate?start=2025-05-11&end=2025-05-25', {
+      // Step 2: Call the generate endpoint to process the data - UPDATED to include both dates
+      const generateResponse = await fetch(`http://172.20.10.2:8080/generate?start=${startDate}&end=${endDate}`, {
         method: 'POST'
       });
       
@@ -168,113 +168,56 @@ const ExcelImportPage = () => {
     }
   }
 
-  // Handle file download as Excel
+  // Handle file download as Excel from API
   const handleDownload = () => {
     if (!processedResult || !processedResult.rawData) return;
-
+  
     try {
-      // Convert data to worksheet format
-      const worksheet = XLSX.utils.json_to_sheet(processedResult.rawData.map(schedule => ({
-        'Môn học': schedule.subject ? schedule.subject.tenMon : 'N/A',
-        'Mã môn': schedule.subject ? schedule.subject.maMon : 'N/A',
-        'Phòng thi': schedule.assignedRooms && schedule.assignedRooms.length > 0 ? 
-          <button 
-            className="room-list-button"
-            onClick={() => {
-              setSelectedRooms(schedule.assignedRooms);
-              setSelectedSubject(schedule.subject.tenMon);
-              setShowRoomModal(true);
-            }}
-          >
-            Xem danh sách phòng ({schedule.assignedRooms.length} phòng)
-          </button> : 'N/A',
-        'Ngày thi': formatDate(schedule.examDate),
-        'Ca thi': schedule.examSlot || 'N/A'
-      })));
+      // Use the selected dates from the state
+      const apiUrl = `http://172.20.10.2:8080/api/examschedules/export?start=${startDate}&end=${endDate}`;
       
-      // Create workbook and add the worksheet
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Lịch thi');
-      
-      // Generate Excel file
-      XLSX.writeFile(workbook, 'lich_thi.xlsx');
+      // Make the request
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error downloading Excel file');
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          // Create a download link
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = 'lich_thi.xls';
+          
+          // Append to the document and trigger download
+          document.body.appendChild(a);
+          a.click();
+          
+          // Cleanup
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        })
+        .catch(err => {
+          console.error('Download error:', err);
+          setError('Lỗi khi tải xuống file Excel');
+        });
     } catch (err) {
-      console.error('Error generating Excel:', err);
-      setError('Lỗi khi tạo file Excel');
+      console.error('Error:', err);
+      setError('Lỗi khi tải xuống file Excel');
     }
   };
 
-  // Add this function to your ExcelImportPage.js file
-  const generateFakeResults = () => {
-    // Danh sách fake môn học
-    const subjects = [
-      { maMon: "MATH101", tenMon: "Toán cao cấp" },
-      { maMon: "PHY102", tenMon: "Vật lý đại cương" },
-      { maMon: "CHEM103", tenMon: "Hóa học cơ bản" },
-      { maMon: "PROG104", tenMon: "Lập trình căn bản" },
-      { maMon: "ENG105", tenMon: "Tiếng Anh chuyên ngành" },
-      { maMon: "ARCH106", tenMon: "Mỹ thuật kiến trúc" },
-      { maMon: "HIST107", tenMon: "Lịch sử kiến trúc" },
-      { maMon: "CIVIL108", tenMon: "Cơ học kết cấu" }
-    ];
-    
-    // Danh sách fake phòng thi
-    const rooms = [
-      { id: 1, roomName: "Phòng A2-101" },
-      { id: 2, roomName: "Phòng A2-203" },
-      { id: 3, roomName: "Phòng B1-304" },
-      { id: 4, roomName: "Phòng C3-105" },
-      { id: 5, roomName: "Hội trường lớn" }
-    ];
-    
-    // Tạo giả lập lịch thi
-    const fakeSchedules = [];
-    const startDate = new Date(2025, 5, 1); // 1/6/2025
-    
-    // Tạo 20 lịch thi giả lập
-    for (let i = 0; i < 20; i++) {
-      const examDate = new Date(startDate);
-      examDate.setDate(startDate.getDate() + Math.floor(i / 4)); // Mỗi ngày có 4 ca thi
-      
-      fakeSchedules.push({
-        id: i + 1,
-        subject: subjects[i % subjects.length],
-        examRoom: rooms[i % rooms.length],
-        examDate: examDate.toISOString(),
-        examSlot: `Ca ${(i % 4) + 1} (${7 + (i % 4) * 3}:30 - ${9 + (i % 4) * 3}:30)`
-      });
-    }
-    
-    // Tạo kết quả giả lập
-    const blob = new Blob([JSON.stringify(fakeSchedules, null, 2)], {
-      type: 'application/json'
-    });
-    const downloadUrl = URL.createObjectURL(blob);
-    
-    return {
-      totalRecords: fakeSchedules.length,
-      successCount: fakeSchedules.length,
-      errorCount: 0,
-      processedData: {
-        headers: ['Môn học', 'Phòng thi', 'Ngày thi', 'Ca thi'],
-        rows: fakeSchedules.map(schedule => [
-          schedule.subject ? schedule.subject.tenMon : 'N/A',
-          schedule.examRoom ? schedule.examRoom.roomName : 'N/A',
-          formatDate(schedule.examDate),
-          schedule.examSlot || 'N/A'
-        ])
-      },
-      logs: [
-        {
-          message: `Đã xếp thành công ${fakeSchedules.length} lịch thi`,
-          timestamp: new Date().toLocaleString('vi-VN'),
-          type: 'info'
-        }
-      ],
-      downloadUrl: downloadUrl,
-      rawData: fakeSchedules
-    };
-  };
+  // Add this state along with the existing startDate
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(() => {
+    // Default end date is 14 days after start date
+    const date = new Date();
+    date.setDate(date.getDate() + 14);
+    return date.toISOString().split('T')[0];
+  });
 
   return (
     <PageContainer title="Tải lên file excel" description="Import and process Excel files">
@@ -319,6 +262,47 @@ const ExcelImportPage = () => {
           {/* Clear separator */}
           <div className="excel-grid-full"></div>
           
+          {/* Date Picker Container - UPDATED */}
+          <div className="excel-grid-full">
+            <div className="date-picker-container">
+              <div className="date-picker-title">
+                <IconCalendarTime size={20} style={{ marginRight: '8px' }} />
+                <span>Thời gian kỳ thi</span>
+              </div>
+              <div className="date-inputs-wrapper">
+                <div className="date-input-group">
+                  <label htmlFor="startDate">Ngày bắt đầu kỳ thi:</label>
+                  <input
+                    id="startDate"
+                    type="date"
+                    className="date-input"
+                    value={startDate}
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                      // If end date is before new start date, update end date too
+                      if (new Date(e.target.value) > new Date(endDate)) {
+                        const newEndDate = new Date(e.target.value);
+                        newEndDate.setDate(newEndDate.getDate() + 14);
+                        setEndDate(newEndDate.toISOString().split('T')[0]);
+                      }
+                    }}
+                  />
+                </div>
+                <div className="date-input-group">
+                  <label htmlFor="endDate">Ngày kết thúc kỳ thi:</label>
+                  <input
+                    id="endDate"
+                    type="date"
+                    className="date-input"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    min={startDate}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Button Container */}
           <div className="excel-grid-full">
             <div className="button-container">
@@ -335,40 +319,7 @@ const ExcelImportPage = () => {
               
               <button 
                 className="download-button"
-                onClick={() => {
-                  if (processedResult && processedResult.rawData) {
-                    try {
-                      // Convert data to worksheet format
-                      const worksheet = XLSX.utils.json_to_sheet(processedResult.rawData.map(schedule => ({
-                        'Môn học': schedule.subject ? schedule.subject.tenMon : 'N/A',
-                        'Mã môn': schedule.subject ? schedule.subject.maMon : 'N/A',
-                        'Phòng thi': schedule.assignedRooms && schedule.assignedRooms.length > 0 ? 
-                          <button 
-                            className="room-list-button"
-                            onClick={() => {
-                              setSelectedRooms(schedule.assignedRooms);
-                              setSelectedSubject(schedule.subject.tenMon);
-                              setShowRoomModal(true);
-                            }}
-                          >
-                            Xem danh sách phòng ({schedule.assignedRooms.length} phòng)
-                          </button> : 'N/A',
-                        'Ngày thi': formatDate(schedule.examDate),
-                        'Ca thi': schedule.examSlot || 'N/A'
-                      })));
-                      
-                      // Create workbook and add the worksheet
-                      const workbook = XLSX.utils.book_new();
-                      XLSX.utils.book_append_sheet(workbook, worksheet, 'Lịch thi');
-                      
-                      // Generate Excel file
-                      XLSX.writeFile(workbook, 'lich_thi.xlsx');
-                    } catch (err) {
-                      console.error('Error generating Excel:', err);
-                      setError('Lỗi khi tạo file Excel');
-                    }
-                  }
-                }}
+                onClick={handleDownload}
                 disabled={!processedResult || !processedResult.rawData}
               >
                 <IconDownload size={18} style={{ marginRight: '8px' }} />

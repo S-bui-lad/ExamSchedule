@@ -1,9 +1,16 @@
-import React from 'react';
-import { Grid, Box, Typography, Card, CardContent, Divider, Container, Paper, Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { 
+  Grid, Box, Typography, Card, CardContent, Divider, Container, Paper, 
+  Button, CircularProgress, Pagination, Stack
+} from '@mui/material';
 import { Link } from 'react-router-dom';
 import PageContainer from 'src/components/container/PageContainer';
 import uniImage from '../../assets/images/backgrounds/uni.jpg';
-import { IconCalendar, IconFileText, IconUsers, IconSettings } from '@tabler/icons-react';
+import { IconCalendar, IconFileText, IconUsers, IconSettings, IconHistory, IconDownload } from '@tabler/icons-react';
+
+// Import the ExcelResultDisplay component
+import ExcelResultDisplay from '../excel/ExcelResultDisplay';
+import '../excel/display.css'; // Import styles if needed
 
 const Dashboard = () => {
   const today = new Date();
@@ -14,6 +21,155 @@ const Dashboard = () => {
     day: 'numeric' 
   };
   const formattedDate = today.toLocaleDateString('vi-VN', options);
+
+  // States for exam schedule history
+  const [processedResult, setProcessedResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [fullData, setFullData] = useState([]);
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  
+  // Modal states for room details
+  const [showRoomModal, setShowRoomModal] = useState(false);
+  const [selectedRooms, setSelectedRooms] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState('');
+
+  // Fetch exam schedule history on component mount
+  useEffect(() => {
+    fetchExamHistory();
+  }, []);
+
+  // Update processed result when page changes
+  useEffect(() => {
+    if (fullData.length > 0) {
+      const paginatedData = getPaginatedData();
+      const formattedResult = formatHistoryData(paginatedData);
+      setProcessedResult(formattedResult);
+    }
+  }, [currentPage, fullData]);
+
+  // Get paginated data
+  const getPaginatedData = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return fullData.slice(startIndex, endIndex);
+  };
+
+  // Fetch exam schedule history from API
+  const fetchExamHistory = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://172.20.10.2:8080/history');
+      if (!response.ok) {
+        throw new Error('Failed to fetch exam history');
+      }
+      
+      const data = await response.json();
+      setFullData(data);
+      
+      // Calculate total pages
+      setTotalPages(Math.ceil(data.length / itemsPerPage));
+      
+      // Format data for ExcelResultDisplay component (only first page)
+      const paginatedData = data.slice(0, itemsPerPage);
+      const formattedResult = formatHistoryData(paginatedData);
+      setProcessedResult(formattedResult);
+    } catch (err) {
+      console.error('Error fetching exam history:', err);
+      setError(err.message || 'Đã xảy ra lỗi khi tải dữ liệu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle page change
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  // Format history data for the ExcelResultDisplay component
+  const formatHistoryData = (data) => {
+    // Create a downloadable blob from the data
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json'
+    });
+    const downloadUrl = URL.createObjectURL(blob);
+    
+    return {
+      totalRecords: fullData.length,
+      displayedRecords: data.length,
+      successCount: data.length,
+      errorCount: 0,
+      processedData: {
+        headers: ['Môn học', 'Phòng thi', 'Ngày thi', 'Ca thi'],
+        rows: data.map(schedule => [
+          schedule.subject ? schedule.subject : 'N/A',
+          schedule.rooms && schedule.rooms.length > 0 ? 
+            <button 
+              className="room-list-button"
+              onClick={() => {
+                setSelectedRooms(schedule.rooms);
+                setSelectedSubject(schedule.subject);
+                setShowRoomModal(true);
+              }}
+            >
+              Xem danh sách phòng ({schedule.rooms.length} phòng)
+            </button> : 'N/A',
+          formatDate(schedule.examDate),
+          schedule.shift || 'N/A'
+        ])
+      },
+      logs: [
+        {
+          message: `Hiển thị ${data.length} lịch thi (trang ${currentPage}/${totalPages})`,
+          timestamp: new Date().toLocaleString('vi-VN'),
+          type: 'info'
+        }
+      ],
+      downloadUrl: downloadUrl,
+      rawData: data,
+      onRoomListClick: (rooms, subjectName) => {
+        setSelectedRooms(rooms);
+        setSelectedSubject(subjectName);
+        setShowRoomModal(true);
+      }
+    };
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('vi-VN', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric'
+      });
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  const handleDownload = () => {
+    if (processedResult && processedResult.downloadUrl) {
+      // Create a temporary link and trigger download
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = processedResult.downloadUrl;
+      a.download = 'lich_thi.json';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(processedResult.downloadUrl);
+      document.body.removeChild(a);
+    }
+  };
 
   const quickActions = [
     {
@@ -49,8 +205,8 @@ const Dashboard = () => {
   return (
     <PageContainer title="Dashboard" description="Trang chủ hệ thống quản lý lịch thi">
       <Box>
-        {/* Welcome Section */}
         <Grid container spacing={3}>
+          {/* Welcome Section */}
           <Grid item xs={12}>
             <Paper 
               elevation={3}
@@ -195,6 +351,43 @@ const Dashboard = () => {
           </Grid>
         </Grid>
       </Box>
+
+      {/* Room List Modal */}
+      {showRoomModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>Danh sách phòng thi - {selectedSubject}</h2>
+              <button 
+                className="close-button"
+                onClick={() => setShowRoomModal(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <table className="room-list-table">
+                <thead>
+                  <tr>
+                    <th>Mã phòng</th>
+                    <th>Sức chứa</th>
+                    <th>Ghi chú</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedRooms.map((room, index) => (
+                    <tr key={index}>
+                      <td>{room.name}</td>
+                      <td>{room.capacity}</td>
+                      <td>{room.note || '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </PageContainer>
   );
 };

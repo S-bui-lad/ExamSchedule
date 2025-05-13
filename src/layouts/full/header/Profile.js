@@ -65,7 +65,8 @@ const Profile = () => {
           },
         }}
       >
-        <MenuItem>
+        {/* Link tới EditProfile */}
+        <MenuItem component={Link} to="/edit-profile">
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
@@ -85,7 +86,7 @@ const Profile = () => {
         </MenuItem>
         <Box mt={1} py={1} px={2}>
           <Button to="/auth/login" variant="outlined" color="primary" component={Link} fullWidth>
-            Login
+            Logout
           </Button>
         </Box>
       </Menu>

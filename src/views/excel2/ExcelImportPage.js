@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IconCloudUpload, IconDownload, IconAlertTriangle, IconFolderOpen } from '@tabler/icons-react';
+import { IconCloudUpload, IconDownload, IconAlertTriangle, IconFolderOpen, IconCalendarTime } from '@tabler/icons-react';
 import PageContainer from '../../components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
 import ExcelFileUploader from './ExcelFileUploader';
@@ -7,6 +7,7 @@ import ExcelResultDisplay from './ExcelResultDisplay';
 import './import2.css';
 import * as XLSX from 'xlsx';
 var header = "Xếp coi thi";
+
 const ExcelImportPage = () => {
   // Only need one file upload for room list
   const [file1, setFile1] = useState(null);
@@ -15,6 +16,15 @@ const ExcelImportPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedResult, setProcessedResult] = useState(null);
   const [error, setError] = useState(null);
+  
+  // Date state variables with better initialization
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(() => {
+    // Default end date is 14 days after start date
+    const date = new Date();
+    date.setDate(date.getDate() + 14);
+    return date.toISOString().split('T')[0];
+  });
 
   const validateExcelFile = (file) => {
     const validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
@@ -119,7 +129,7 @@ const ExcelImportPage = () => {
     };
   };
 
-  // Process files - now just generates fake data
+  // Process files - now calls the real API with endDate included
   const handleProcessFiles = async () => {
     if (!file1) {
       setError("Chưa upload danh sách phòng thi");
@@ -130,13 +140,65 @@ const ExcelImportPage = () => {
     setIsProcessing(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Step 1: Create form data for API call
+      const formData = new FormData();
+      formData.append('file', file1);
       
-      // Generate fake data
-      const fakeResult = generateFakeExamSupervision();
-      setProcessedResult(fakeResult);
+      // Add both start and end dates to the form data
+      formData.append('start', startDate);
+      formData.append('end', endDate);
+      
+      // Step 2: Call the API to assign proctors
+      const assignResponse = await fetch('http://172.20.10.2:8080/api/proctor/assign', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!assignResponse.ok) {
+        const errorText = await assignResponse.text();
+        throw new Error(errorText || 'Lỗi khi phân công giám thị');
+      }
+      
+      // Step 3: Get the proctor schedules with date range
+      const schedulesResponse = await fetch(
+        `http://172.20.10.2:8080/api/proctor/schedules?start=${startDate}&end=${endDate}`
+      );
+      
+      if (!schedulesResponse.ok) {
+        throw new Error('Lỗi khi lấy lịch coi thi');
+      }
+      
+      const schedules = await schedulesResponse.json();
+      
+      // Step 4: Format the API response for the UI
+      const processedResult = {
+        totalRecords: schedules.length,
+        successCount: schedules.length,
+        errorCount: 0,
+        processedData: {
+          headers: ['Phòng thi', 'Môn thi', 'Ngày thi', 'Ca thi', 'Giám thị 1', 'Bộ môn'],
+          rows: schedules.map(schedule => [
+            schedule.roomName || 'N/A',
+            schedule.subject || 'N/A',
+            formatDate(schedule.examDate),
+            schedule.slot ? `Ca ${schedule.slot}` : 'N/A',
+            schedule.teacher?.name || 'N/A',
+            schedule.teacher?.khoa || 'N/A'
+          ])
+        },
+        logs: [
+          {
+            message: `Đã phân công ${schedules.length} ca coi thi cho giảng viên từ ${formatDate(startDate)} đến ${formatDate(endDate)}`,
+            timestamp: new Date().toLocaleString('vi-VN'),
+            type: 'info'
+          }
+        ],
+        rawData: schedules
+      };
+      
+      setProcessedResult(processedResult);
     } catch (err) {
+      console.error('Error:', err);
       setError(err.message || 'Lỗi không xác định');
     } finally {
       setIsProcessing(false);
@@ -160,35 +222,31 @@ const ExcelImportPage = () => {
     }
   }
 
-  // Handle file download as Excel
+  // Handle file download as Excel - updated with date range
   const handleDownload = () => {
     if (!processedResult || !processedResult.rawData) return;
     
     try {
       // Convert supervision data to worksheet format
       const worksheet = XLSX.utils.json_to_sheet(processedResult.rawData.map(schedule => ({
-        'Phòng thi': schedule.examRoom.roomName,
-        'Môn thi': schedule.subject.tenMon,
-        'Mã môn': schedule.subject.maMon,
+        'Phòng thi': schedule.roomName || 'N/A',
+        'Môn thi': schedule.subject || 'N/A',
         'Ngày thi': formatDate(schedule.examDate),
-        'Ca thi': schedule.examSlot,
-        'Giám thị 1': schedule.mainSupervisor.name,
-        'Bộ môn': schedule.mainSupervisor.department,
-        'Giám thị 2': schedule.assistantSupervisor.name,
-        'Bộ môn 2': schedule.assistantSupervisor.department
+        'Ca thi': schedule.slot ? `Ca ${schedule.slot}` : 'N/A',
+        'Giám thị': schedule.teacher?.name || 'N/A',
+        'Bộ môn': schedule.teacher?.khoa || 'N/A',
+        'Ngày': schedule.day || 'N/A'
       })));
       
       // Set column widths for better readability
       const wscols = [
         {wch: 15}, // Phòng thi
         {wch: 20}, // Môn thi
-        {wch: 10}, // Mã môn
         {wch: 25}, // Ngày thi
-        {wch: 20}, // Ca thi
-        {wch: 20}, // Giám thị 1
+        {wch: 10}, // Ca thi
+        {wch: 20}, // Giám thị
         {wch: 15}, // Bộ môn
-        {wch: 20}, // Giám thị 2
-        {wch: 15}  // Bộ môn 2
+        {wch: 10}  // Ngày
       ];
       worksheet['!cols'] = wscols;
       
@@ -196,8 +254,11 @@ const ExcelImportPage = () => {
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Lịch coi thi');
       
-      // Generate Excel file
-      XLSX.writeFile(workbook, 'lich_coi_thi.xlsx');
+      // Generate filename with date range
+      const filename = `lich_coi_thi_${startDate}_${endDate}.xls`;
+      
+      // Generate Excel file as XLS format
+      XLSX.writeFile(workbook, filename, { bookType: 'xls' });
     } catch (err) {
       console.error('Error generating Excel:', err);
       setError('Lỗi khi tạo file Excel');
@@ -210,7 +271,7 @@ const ExcelImportPage = () => {
       <div className="page-title-container">
         <h1 className="page-main-title">{header}</h1>
         <p className="page-subtitle">Tải lên các file Excel để hệ thống tự động xếp lịch thi</p>
-      </div>
+      </div> 
       <DashboardCard title="Lịch coi thi giảng viên">
         <div className="excel-grid-container">
           {/* Centered File Uploader with clear File Explorer button */}
@@ -218,8 +279,8 @@ const ExcelImportPage = () => {
             <div className="centered-upload-container">
               <div className="centered-excel-uploader">
                 <ExcelFileUploader 
-                  title="Danh sách phòng thi" 
-                  description="Upload danh sách phòng thi để xếp lịch coi thi"
+                  title="Lịch thi" 
+                  description="Upload lịch thi để xếp lịch coi thi"
                   onFileChange={(file) => handleFileChange(1, file)}
                   file={file1}
                   showFileExplorerButton={true}
@@ -228,6 +289,47 @@ const ExcelImportPage = () => {
             </div>
           </div>
           
+          {/* Enhanced Date Picker with both start and end dates */}
+          <div className="excel-grid-full">
+            <div className="date-picker-container">
+              <div className="date-picker-title">
+                <IconCalendarTime size={20} style={{ marginRight: '8px' }} />
+                <span>Thời gian kỳ thi</span>
+              </div>
+              <div className="date-inputs-wrapper">
+                <div className="date-input-group">
+                  <label htmlFor="startDate">Ngày bắt đầu kỳ thi:</label>
+                  <input
+                    id="startDate"
+                    type="date"
+                    className="date-input"
+                    value={startDate}
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                      // If end date is before new start date, update end date too
+                      if (new Date(e.target.value) > new Date(endDate)) {
+                        const newEndDate = new Date(e.target.value);
+                        newEndDate.setDate(newEndDate.getDate() + 14);
+                        setEndDate(newEndDate.toISOString().split('T')[0]);
+                      }
+                    }}
+                  />
+                </div>
+                <div className="date-input-group">
+                  <label htmlFor="endDate">Ngày kết thúc kỳ thi:</label>
+                  <input
+                    id="endDate"
+                    type="date"
+                    className="date-input"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    min={startDate}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Action Buttons */}
           <div className="excel-grid-full">
             <div className="button-container">

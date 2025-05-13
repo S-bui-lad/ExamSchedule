@@ -4,7 +4,8 @@ import {
   DialogTitle, IconButton, InputBase, Paper, Table,
   TableBody, TableCell, TableContainer, TableHead,
   TableRow, TextField, Typography, FormControlLabel,
-  Checkbox, Pagination, MenuItem, Select
+  Checkbox, Pagination, MenuItem, Select, Grid,
+  useTheme, useMediaQuery
 } from '@mui/material';
 import { 
   IconTrash, 
@@ -18,6 +19,10 @@ import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
 
 const Teacher = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+
   const [teachers, setTeachers] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,7 +35,7 @@ const Teacher = () => {
 
   const [newTeacher, setNewTeacher] = useState({ name: '', status: false, mgv: '', khoa: '' });
   const [editTeacher, setEditTeacher] = useState({ id: null, name: '', status: false, mgv: '', khoa: '' });
-  const apiUrl = "http://localhost:8080/teachers";
+  const apiUrl = "http://172.20.10.2:8080/teachers";
   
   const fetchTeachers = async () => {
     try {
@@ -136,49 +141,72 @@ const Teacher = () => {
     <PageContainer title="Quản lý giảng viên" description="Danh sách giảng viên">
       <DashboardCard title="Danh sách giảng viên">
         {/* Toolbar */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Box display="flex" gap={2} alignItems="center">
-            <IconButton><IconFilter /></IconButton>
-            <Select
-              value={filters.status}
-              onChange={e => setFilters({ ...filters, status: e.target.value })}
-              displayEmpty
-              size="small"
+        <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
+          <Grid item xs={12} md={6}>
+            <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2}>
+              <Box display="flex" gap={1} alignItems="center" flexWrap="wrap">
+                <IconButton size={isMobile ? "small" : "medium"}><IconFilter /></IconButton>
+                <Select
+                  value={filters.status}
+                  onChange={e => setFilters({ ...filters, status: e.target.value })}
+                  displayEmpty
+                  size="small"
+                  sx={{ minWidth: isMobile ? '100%' : 120 }}
+                >
+                  <MenuItem value="">Tất cả</MenuItem>
+                  <MenuItem value="true">Hoạt động</MenuItem>
+                  <MenuItem value="false">Ngưng</MenuItem>
+                </Select>
+                <TextField
+                  label="Lọc mã GV"
+                  size="small"
+                  value={filters.mgv}
+                  onChange={e => setFilters({ ...filters, mgv: e.target.value })}
+                  sx={{ minWidth: isMobile ? '100%' : 120 }}
+                />
+                <TextField
+                  label="Lọc khoa"
+                  size="small"
+                  value={filters.khoa}
+                  onChange={e => setFilters({ ...filters, khoa: e.target.value })}
+                  sx={{ minWidth: isMobile ? '100%' : 120 }}
+                />
+              </Box>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Paper sx={{ display: 'flex', alignItems: 'center', width: '100%', px: 1 }}>
+              <InputBase
+                placeholder="Tìm theo tên..."
+                fullWidth
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <IconButton><IconSearch /></IconButton>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={3} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={() => setOpenAddModal(true)}
+              fullWidth={isMobile}
             >
-              <MenuItem value="">Tất cả</MenuItem>
-              <MenuItem value="true">Hoạt động</MenuItem>
-              <MenuItem value="false">Ngưng</MenuItem>
-            </Select>
-            <TextField
-              label="Lọc mã GV"
-              size="small"
-              value={filters.mgv}
-              onChange={e => setFilters({ ...filters, mgv: e.target.value })}
-            />
-            <TextField
-              label="Lọc khoa"
-              size="small"
-              value={filters.khoa}
-              onChange={e => setFilters({ ...filters, khoa: e.target.value })}
-            />
-          </Box>
-          <Paper sx={{ display: 'flex', alignItems: 'center', width: 300, px: 1 }}>
-            <InputBase
-              placeholder="Tìm theo tên..."
-              fullWidth
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <IconButton><IconSearch /></IconButton>
-          </Paper>
-          <Button variant="contained" color="primary" onClick={() => setOpenAddModal(true)}>
-            Thêm giảng viên
-          </Button>
-        </Box>
+              Thêm giảng viên
+            </Button>
+          </Grid>
+        </Grid>
 
         {/* Table */}
-        <TableContainer>
-          <Table>
+        <TableContainer sx={{ 
+          maxWidth: '100%',
+          overflowX: 'auto',
+          '& .MuiTableCell-root': {
+            whiteSpace: 'nowrap',
+            minWidth: isMobile ? 100 : 150
+          }
+        }}>
+          <Table size={isMobile ? "small" : "medium"}>
             <TableHead>
               <TableRow>
                 <TableCell>Mã GV</TableCell>
@@ -200,15 +228,25 @@ const Teacher = () => {
                       : <IconMoodSad color="red" />}
                   </TableCell>
                   <TableCell>
-                    <IconButton color="primary" onClick={() => handleOpenEdit(t)}>
-                      <IconEdit />
-                    </IconButton>
-                    <IconButton color="error" onClick={() => {
-                      setSelectedId(t.id);
-                      setOpenConfirm(true);
-                    }}>
-                      <IconTrash />
-                    </IconButton>
+                    <Box display="flex" gap={1}>
+                      <IconButton 
+                        color="primary" 
+                        onClick={() => handleOpenEdit(t)}
+                        size={isMobile ? "small" : "medium"}
+                      >
+                        <IconEdit />
+                      </IconButton>
+                      <IconButton 
+                        color="error" 
+                        onClick={() => {
+                          setSelectedId(t.id);
+                          setOpenConfirm(true);
+                        }}
+                        size={isMobile ? "small" : "medium"}
+                      >
+                        <IconTrash />
+                      </IconButton>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))}
@@ -216,26 +254,56 @@ const Teacher = () => {
           </Table>
         </TableContainer>
 
-        {/* Pagination placeholder */}
+        {/* Pagination */}
         <Box display="flex" justifyContent="center" mt={2}>
-          <Pagination count={1} />
+          <Pagination 
+            count={1} 
+            size={isMobile ? "small" : "medium"}
+          />
         </Box>
 
         {/* Dialogs */}
-        <Dialog open={openAddModal} onClose={() => setOpenAddModal(false)}>
+        <Dialog 
+          open={openAddModal} 
+          onClose={() => setOpenAddModal(false)}
+          fullWidth
+          maxWidth={isMobile ? "xs" : "sm"}
+        >
           <DialogTitle>Thêm giảng viên</DialogTitle>
           <DialogContent>
-            <TextField fullWidth margin="dense" label="Tên" value={newTeacher.name}
-              onChange={e => setNewTeacher({ ...newTeacher, name: e.target.value })} />
-            <TextField fullWidth margin="dense" label="Mã GV" value={newTeacher.mgv}
-              onChange={e => setNewTeacher({ ...newTeacher, mgv: e.target.value })} />
-            <TextField fullWidth margin="dense" label="Khoa" value={newTeacher.khoa}
-              onChange={e => setNewTeacher({ ...newTeacher, khoa: e.target.value })} />
-            <FormControlLabel
-              control={<Checkbox checked={newTeacher.status}
-                onChange={e => setNewTeacher({ ...newTeacher, status: e.target.checked })} />}
-              label="Hoạt động"
-            />
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item xs={12}>
+                <TextField 
+                  fullWidth 
+                  label="Tên" 
+                  value={newTeacher.name}
+                  onChange={e => setNewTeacher({ ...newTeacher, name: e.target.value })} 
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField 
+                  fullWidth 
+                  label="Mã GV" 
+                  value={newTeacher.mgv}
+                  onChange={e => setNewTeacher({ ...newTeacher, mgv: e.target.value })} 
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField 
+                  fullWidth 
+                  label="Khoa" 
+                  value={newTeacher.khoa}
+                  onChange={e => setNewTeacher({ ...newTeacher, khoa: e.target.value })} 
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={<Checkbox checked={newTeacher.status}
+                    onChange={e => setNewTeacher({ ...newTeacher, status: e.target.checked })} />}
+                  label="Hoạt động"
+                />
+              </Grid>
+            </Grid>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpenAddModal(false)}>Hủy</Button>
@@ -243,20 +311,47 @@ const Teacher = () => {
           </DialogActions>
         </Dialog>
 
-        <Dialog open={openEditModal} onClose={() => setOpenEditModal(false)}>
+        <Dialog 
+          open={openEditModal} 
+          onClose={() => setOpenEditModal(false)}
+          fullWidth
+          maxWidth={isMobile ? "xs" : "sm"}
+        >
           <DialogTitle>Chỉnh sửa</DialogTitle>
           <DialogContent>
-            <TextField fullWidth margin="dense" label="Tên" value={editTeacher.name}
-              onChange={e => setEditTeacher({ ...editTeacher, name: e.target.value })} />
-            <TextField fullWidth margin="dense" label="Mã GV" value={editTeacher.mgv}
-              onChange={e => setEditTeacher({ ...editTeacher, mgv: e.target.value })} />
-            <TextField fullWidth margin="dense" label="Khoa" value={editTeacher.khoa}
-              onChange={e => setEditTeacher({ ...editTeacher, khoa: e.target.value })} />
-            <FormControlLabel
-              control={<Checkbox checked={editTeacher.status}
-                onChange={e => setEditTeacher({ ...editTeacher, status: e.target.checked })} />}
-              label="Hoạt động"
-            />
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item xs={12}>
+                <TextField 
+                  fullWidth 
+                  label="Tên" 
+                  value={editTeacher.name}
+                  onChange={e => setEditTeacher({ ...editTeacher, name: e.target.value })} 
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField 
+                  fullWidth 
+                  label="Mã GV" 
+                  value={editTeacher.mgv}
+                  onChange={e => setEditTeacher({ ...editTeacher, mgv: e.target.value })} 
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField 
+                  fullWidth 
+                  label="Khoa" 
+                  value={editTeacher.khoa}
+                  onChange={e => setEditTeacher({ ...editTeacher, khoa: e.target.value })} 
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={<Checkbox checked={editTeacher.status}
+                    onChange={e => setEditTeacher({ ...editTeacher, status: e.target.checked })} />}
+                  label="Hoạt động"
+                />
+              </Grid>
+            </Grid>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpenEditModal(false)}>Hủy</Button>
@@ -264,7 +359,12 @@ const Teacher = () => {
           </DialogActions>
         </Dialog>
 
-        <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <Dialog 
+          open={openConfirm} 
+          onClose={() => setOpenConfirm(false)}
+          fullWidth
+          maxWidth="xs"
+        >
           <DialogTitle>Xác nhận xóa</DialogTitle>
           <DialogContent>
             <Typography>Bạn chắc chắn muốn xóa giảng viên này?</Typography>

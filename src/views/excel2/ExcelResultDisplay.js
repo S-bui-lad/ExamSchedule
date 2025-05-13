@@ -51,7 +51,7 @@ const ExcelResultDisplay = ({ data }) => {
               <IconCheck size={20} color="#4caf50" />
             </div>
             <div className="info-content">
-              <span className="info-label">Successfully Processed</span>
+              <span className="info-label">thành công</span>
               <span className="info-value">{data.successCount || "N/A"}</span>
             </div>
           </li>

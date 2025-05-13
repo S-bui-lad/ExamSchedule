@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Lịch Thi</string>
+    <string name="title_activity_main">Lịch Thi</string>
+    <string name="package_name">com.hrte.examschedule</string>
+    <string name="custom_url_scheme">com.hrte.examschedule</string>
+</resources>

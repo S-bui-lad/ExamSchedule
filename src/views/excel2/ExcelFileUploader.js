@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { IconCloudUpload, IconFile, IconFolderOpen } from '@tabler/icons-react';
-import './upload.css'; // Add this CSS file for styles
+import './upload.css';
 
 const ExcelFileUploader = ({ title, description, onFileChange, file, showFileExplorerButton = true }) => {
   const fileInputRef = useRef(null);
@@ -31,7 +31,7 @@ const ExcelFileUploader = ({ title, description, onFileChange, file, showFileExp
   };
   
   return (
-    <div className="excel-file-uploader">
+    <div className="excel-file-uploader mobile-friendly">
       <h3>{title}</h3>
       <p>{description}</p>
       
@@ -51,14 +51,18 @@ const ExcelFileUploader = ({ title, description, onFileChange, file, showFileExp
           className="drop-area"
           onDragOver={handleDragOver}
           onDrop={handleDrop}
+          onClick={openFileExplorer} // Make entire area clickable on mobile
         >
           <IconCloudUpload size={48} color="#9e9e9e" />
-          <p>Kéo & thả file Excel vào đây</p>
+          <p>Nhấn để chọn file Excel</p>
           
           {showFileExplorerButton && (
             <button 
               className="file-explorer-button"
-              onClick={openFileExplorer}
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent double clicks
+                openFileExplorer();
+              }}
             >
               <IconFolderOpen size={18} style={{ marginRight: '8px' }} />
               Chọn từ File Explorer

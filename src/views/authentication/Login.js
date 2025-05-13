@@ -7,10 +7,10 @@ import PageContainer from 'src/components/container/PageContainer';
 import Logo from 'src/layouts/full/shared/logo/Logo';
 import AuthLogin from './auth/AuthLogin';
 
-const Login2 = () => {
+const Login = () => {
   
   return (
-    <PageContainer title="Đăng nhập" description="Đây là trang đăng nhập">
+    <PageContainer title="Login" description="this is Login page">
       <Box
         sx={{
           position: 'relative',
@@ -41,7 +41,14 @@ const Login2 = () => {
               <Box display="flex" alignItems="center" justifyContent="center">
                 <Logo />
               </Box>
-              <AuthLogin/>
+              <AuthLogin
+                subtext={
+                  <Typography variant="subtitle1" textAlign="center" color="textSecondary" mb={1}>
+                    Hệ thống quản lý lịch thi
+                  </Typography>
+                }
+                
+              />
             </Card>
           </Grid>
         </Grid>
@@ -50,4 +57,4 @@ const Login2 = () => {
   );
 };
 
-export default Login2;
+export default Login;

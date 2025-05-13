@@ -97,3 +97,24 @@
     margin-top: 8px;
     font-size: 0.875rem;
   }
+
+  @media (max-width: 768px) {
+    .excel-file-uploader.mobile-friendly {
+      padding: 15px;
+    }
+    
+    .excel-file-uploader.mobile-friendly .drop-area {
+      min-height: 120px;
+      cursor: pointer;
+    }
+    
+    .excel-file-uploader.mobile-friendly .file-explorer-button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    
+    .excel-file-uploader.mobile-friendly .change-button {
+      padding: 10px 15px;
+    }
+  }
