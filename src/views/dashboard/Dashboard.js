@@ -196,9 +196,9 @@ const Dashboard = () => {
     {
       title: 'Lịch thi',
       icon: <IconSettings size={32} />,
-      description: 'Cấu hình hệ thống',
+      description: 'Xem lại lịch sử sắp xếp',
       color: '#ff9800',
-      path: '/teacher/settings'
+      path: '/history'
     }
   ];
 

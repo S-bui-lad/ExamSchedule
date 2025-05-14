@@ -1,23 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Grid, Box, Typography, Card, CardContent, Divider, Container, Paper, 
-  Button, CircularProgress, Pagination, Stack
+  Button, CircularProgress, Pagination, Stack, useTheme, useMediaQuery,
+  Collapse, IconButton
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import PageContainer from 'src/components/container/PageContainer';
 import uniImage from '../../assets/images/backgrounds/uni.jpg';
-import { IconCalendar, IconFileText, IconUsers, IconSettings, IconHistory, IconDownload } from '@tabler/icons-react';
+import { 
+  IconCalendar, IconFileText, IconUsers, IconSettings, 
+  IconHistory, IconDownload, IconChevronDown, IconChevronUp 
+} from '@tabler/icons-react';
+import LogoDark1 from "src/assets/images/logos/Logo_HAU.png";
 
 // Import the ExcelResultDisplay component
 import ExcelResultDisplay from '../excel/ExcelResultDisplay';
 import '../excel/display.css'; // Import styles if needed
 
 const History = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
   const today = new Date();
   const options = { 
-    weekday: 'long', 
+    weekday: isMobile ? 'short' : 'long', 
     year: 'numeric', 
-    month: 'long', 
+    month: isMobile ? 'numeric' : 'long', 
     day: 'numeric' 
   };
   const formattedDate = today.toLocaleDateString('vi-VN', options);
@@ -37,6 +45,17 @@ const History = () => {
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState('');
+  
+  // Collapsible states
+  const [expandedItems, setExpandedItems] = useState({});
+
+  // Toggle expanded/collapsed state for an item
+  const toggleItemExpand = (index) => {
+    setExpandedItems(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
 
   // Fetch exam schedule history on component mount
   useEffect(() => {
@@ -49,6 +68,9 @@ const History = () => {
       const paginatedData = getPaginatedData();
       const formattedResult = formatHistoryData(paginatedData);
       setProcessedResult(formattedResult);
+      
+      // Reset expanded items when changing page
+      setExpandedItems({});
     }
   }, [currentPage, fullData]);
 
@@ -106,18 +128,19 @@ const History = () => {
       errorCount: 0,
       processedData: {
         headers: ['Môn học', 'Phòng thi', 'Ngày thi', 'Ca thi'],
-        rows: data.map(schedule => [
+        rows: data.map((schedule, index) => [
           schedule.subject ? schedule.subject : 'N/A',
           schedule.rooms && schedule.rooms.length > 0 ? 
             <button 
               className="room-list-button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent row click event
                 setSelectedRooms(schedule.rooms);
                 setSelectedSubject(schedule.subject);
                 setShowRoomModal(true);
               }}
             >
-              Xem danh sách phòng ({schedule.rooms.length} phòng)
+              {isMobile ? `Xem (${schedule.rooms.length})` : `Xem danh sách phòng (${schedule.rooms.length} phòng)`}
             </button> : 'N/A',
           formatDate(schedule.examDate),
           schedule.shift || 'N/A'
@@ -136,7 +159,9 @@ const History = () => {
         setSelectedRooms(rooms);
         setSelectedSubject(subjectName);
         setShowRoomModal(true);
-      }
+      },
+      expandedItems: expandedItems,
+      toggleItemExpand: toggleItemExpand
     };
   };
 
@@ -147,7 +172,7 @@ const History = () => {
     try {
       const date = new Date(dateString);
       return date.toLocaleDateString('vi-VN', {
-        weekday: 'long',
+        weekday: isMobile ? 'short' : 'long',
         day: 'numeric',
         month: 'numeric',
         year: 'numeric'
@@ -174,28 +199,28 @@ const History = () => {
   const quickActions = [
     {
       title: 'Quản lý lịch thi',
-      icon: <IconCalendar size={32} />,
+      icon: <IconCalendar size={isMobile ? 24 : 32} />,
       description: 'Xem và quản lý lịch thi',
       color: '#3f51b5',
       path: '/excel'
     },
     {
       title: 'Quản lý coi thi',
-      icon: <IconFileText size={32} />,
+      icon: <IconFileText size={isMobile ? 24 : 32} />,
       description: 'Quản lý danh sách môn thi',
       color: '#f50057',
       path: '/excel2'
     },
     {
       title: 'Quản lý giảng viên',
-      icon: <IconUsers size={32} />,
+      icon: <IconUsers size={isMobile ? 24 : 32} />,
       description: 'Quản lý tài khoản người dùng',
       color: '#4caf50',
       path: '/teacher'
     },
     {
       title: 'Lịch thi',
-      icon: <IconSettings size={32} />,
+      icon: <IconSettings size={isMobile ? 24 : 32} />,
       description: 'Cấu hình hệ thống',
       color: '#ff9800',
       path: '/teacher/settings'
@@ -204,20 +229,46 @@ const History = () => {
 
   return (
     <PageContainer title="Dashboard" description="Trang chủ hệ thống quản lý lịch thi">
-      <Box>
-        <Grid container spacing={3}>
+      <Box sx={{ px: isMobile ? 1 : 3 }}>
+        <Grid container spacing={isMobile ? 2 : 3}>
+          {/* Mobile Logo */}
+          {isMobile && (
+            <Grid item xs={12}>
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  mb: 2,
+                  background: 'white',
+                  borderRadius: 2,
+                  p: 1,
+                  boxShadow: 1
+                }}
+              >
+                <img 
+                  src={LogoDark1} 
+                  alt="HAU Logo" 
+                  style={{ 
+                    height: 50, 
+                    objectFit: 'contain' 
+                  }} 
+                />
+              </Box>
+            </Grid>
+          )}
+          
           {/* Welcome Section */}
           <Grid item xs={12}>
             <Paper 
               elevation={3}
               sx={{ 
-                p: 4, 
+                p: isMobile ? 2 : 4, 
                 borderRadius: 2,
                 background: 'linear-gradient(45deg, #3f51b5 30%, #7986cb 90%)',
                 color: 'white'
               }}
             >
-              <Typography variant="subtitle1">
+              <Typography variant={isMobile ? "body1" : "subtitle1"}>
                 {formattedDate}
               </Typography>
             </Paper>
@@ -227,22 +278,34 @@ const History = () => {
             <Paper 
               elevation={3}
               sx={{ 
-                mt: 4,
-                p: 3, 
+                mt: isMobile ? 2 : 4,
+                p: isMobile ? 2 : 3, 
                 borderRadius: 2,
                 overflow: 'hidden'
               }}
             >
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-                  <IconHistory size={24} style={{ marginRight: '8px' }} />
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: isMobile ? 'column' : 'row',
+                justifyContent: 'space-between', 
+                alignItems: isMobile ? 'flex-start' : 'center', 
+                mb: 2,
+                gap: isMobile ? 1 : 0
+              }}>
+                <Typography variant={isMobile ? "h6" : "h5"} sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  fontSize: isMobile ? '1.1rem' : '1.5rem'
+                }}>
+                  <IconHistory size={isMobile ? 20 : 24} style={{ marginRight: '8px' }} />
                   Lịch sử xếp lịch thi
                 </Typography>
                 {processedResult && (
                   <Button 
                     variant="outlined" 
                     color="primary" 
-                    startIcon={<IconDownload size={18} />}
+                    size={isMobile ? "small" : "medium"}
+                    startIcon={<IconDownload size={isMobile ? 16 : 18} />}
                     onClick={handleDownload}
                   >
                     Tải xuống
@@ -264,6 +327,8 @@ const History = () => {
                     <ExcelResultDisplay 
                       data={{
                         ...processedResult,
+                        expandedItems: expandedItems,
+                        toggleItemExpand: toggleItemExpand,
                         onRoomListClick: (rooms, subjectName) => {
                           setSelectedRooms(rooms);
                           setSelectedSubject(subjectName);
@@ -275,7 +340,11 @@ const History = () => {
                   
                   {/* Pagination */}
                   {totalPages > 1 && (
-                    <Stack spacing={2} sx={{ mt: 3, display: 'flex', alignItems: 'center' }}>
+                    <Stack spacing={2} sx={{ 
+                      mt: 3, 
+                      display: 'flex', 
+                      alignItems: 'center' 
+                    }}>
                       <Typography variant="body2" color="text.secondary">
                         Trang {currentPage} / {totalPages} - Tổng cộng {fullData.length} bản ghi
                       </Typography>
@@ -285,8 +354,10 @@ const History = () => {
                         onChange={handlePageChange}
                         variant="outlined" 
                         color="primary"
-                        showFirstButton
-                        showLastButton
+                        size={isMobile ? "small" : "medium"}
+                        showFirstButton={!isMobile}
+                        showLastButton={!isMobile}
+                        siblingCount={isMobile ? 0 : 1}
                       />
                     </Stack>
                   )}
@@ -303,8 +374,8 @@ const History = () => {
             <Box 
               component="footer" 
               sx={{
-                py: 4,
-                mt: 4,
+                py: isMobile ? 2 : 4,
+                mt: isMobile ? 2 : 4,
                 textAlign: 'center',
                 backgroundColor: (theme) => theme.palette.background.paper,
                 boxShadow: 3,
@@ -312,17 +383,17 @@ const History = () => {
               }}
             >
               <Container maxWidth="lg">
-                <Typography variant="h6" gutterBottom>
+                <Typography variant={isMobile ? "subtitle1" : "h6"} gutterBottom>
                   Trường Đại học Kiến trúc Hà Nội
                 </Typography>
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="body2" color="text.secondary">
                   P. Văn Quán, Hà Đông, Hà Nội
                 </Typography>
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="body2" color="text.secondary">
                   Điện thoại: 024 3854 1616 | Email: info@hau.edu.vn
                 </Typography>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="body2" color="text.secondary">
+                <Divider sx={{ my: isMobile ? 1 : 2 }} />
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: isMobile ? '0.7rem' : '0.75rem' }}>
                   © {new Date().getFullYear()} Hệ thống quản lý lịch thi. All rights reserved.
                 </Typography>
               </Container>

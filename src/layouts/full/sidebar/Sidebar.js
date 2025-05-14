@@ -1,6 +1,6 @@
 import { useMediaQuery, Box, Drawer, styled } from '@mui/material';
 import SidebarItems from './SidebarItems';
-import { Upgrade } from './Updrade';
+
 import { Sidebar, Logo } from 'react-mui-sidebar';
 /*logo Hau có thể viết qua svg*/
 import logo from '../../../assets/images/logos/Logo_HAU.png'
@@ -118,7 +118,7 @@ const MSidebar = (props) => {
         {/* Sidebar For Mobile */}
         {/* ------------------------------------------- */}
         <SidebarItems />
-        <Upgrade />
+        
       </Sidebar>
     </StyledDrawer>
   );
