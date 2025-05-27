@@ -6,31 +6,24 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.List;
+
 @Configuration
 public class CorsConfig {
-    
+
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        
-        // Allow all origins
-        config.addAllowedOrigin("http://172.20.10.2:5173");
-        
-        // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
-        config.addAllowedMethod("*");
-        
-        // Allow all headers
-        config.addAllowedHeader("*");
-        
-        // Allow credentials (cookies, authorization headers, etc.)
+
+        // Cho phép nhiều origin nếu cần
+        config.setAllowedOriginPatterns(List.of("http://172.20.10.2:5173", "http://localhost:5173"));
+
         config.setAllowCredentials(true);
-        
-        // Apply this configuration to all paths
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+
         source.registerCorsConfiguration("/**", config);
-
-
-        
         return new CorsFilter(source);
     }
 }
