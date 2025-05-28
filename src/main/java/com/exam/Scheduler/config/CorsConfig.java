@@ -16,8 +16,13 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        // Cho phép nhiều origin nếu cần
-        config.setAllowedOriginPatterns(List.of("http://172.20.10.2:5173", "http://localhost:5173"));
+        // ⚠️ Thay bằng domain thật của bạn (S3 hoặc CloudFront)
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:5173", // để dev local
+                "http://172.20.10.2:5173", // nếu test nội bộ
+                "http://fewebserver.s3-website-ap-southeast-2.amazonaws.com", // domain production
+                "https://d123abcd1234.cloudfront.net" // CloudFront nếu có
+        ));
 
         config.setAllowCredentials(true);
         config.addAllowedHeader("*");
