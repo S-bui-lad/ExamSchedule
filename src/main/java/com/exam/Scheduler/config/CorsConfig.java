@@ -20,8 +20,8 @@ public class CorsConfig {
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173", // để dev local
                 "http://172.20.10.2:5173", // nếu test nội bộ
-                "https://feadmin.son1311.id.vn", // domain production
-                "https://d123abcd1234.cloudfront.net" // CloudFront nếu có
+                "https://feadmin.son1311.id.vn",
+                "http://fewebserver.s3-website-ap-southeast-2.amazonaws.com"
         ));
 
         config.setAllowCredentials(true);
