@@ -21,7 +21,8 @@ public class CorsConfig {
                 "http://localhost:5173", // để dev local
                 "http://172.20.10.2:5173", // nếu test nội bộ
                 "https://feadmin.son1311.id.vn",
-                "http://fewebserver.s3-website-ap-southeast-2.amazonaws.com"
+                "http://fewebserver.s3-website-ap-southeast-2.amazonaws.com",
+                "http://52.62.16.185"
         ));
 
         config.setAllowCredentials(true);
